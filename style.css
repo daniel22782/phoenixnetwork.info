@@ -29,7 +29,7 @@ body {
 .header-logo {
   height: 64px;
   width: auto;
-  filter: drop-shadow(0 0 10px rgba(244, 199, 106, 0.25));
+  filter: drop-shadow(0 0 10px rgba(196, 135, 14, 0.25));
 }
 
 nav a {
