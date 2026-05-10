@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phoenix Network — Nodes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico">
+  <style>
+    /* ── Node Directory Extensions ───────────────── */
+
+    .node-wrapper {
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .dir-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px rgba(244, 199, 106, 0.25));
+    }
+
+    /* Index table */
+    .node-index {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5rem;
+      font-size: 0.85rem;
+    }
+
+    .node-index thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .node-index th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      color: var(--gold-soft);
+      letter-spacing: 0.15em;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+
+    .node-index td {
+      padding: 0.5rem 0.75rem;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(244, 199, 106, 0.07);
+    }
+
+    .node-index td:first-child {
+      color: var(--gold-soft);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+    }
+
+    .node-index td.node-name {
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    /* Status dot */
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #3eca6e;
+      box-shadow: 0 0 6px rgba(62, 202, 110, 0.5);
+      vertical-align: middle;
+    }
+
+    .status-active { color: #3eca6e; }
+
+    /* Section divider */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Node card */
+    .node-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+      background: rgba(5, 5, 7, 0.6);
+    }
+
+    .node-card-header {
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      background: rgba(244, 199, 106, 0.03);
+    }
+
+    .node-num {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--gold-soft);
+      flex-shrink: 0;
+    }
+
+    .node-title {
+      font-size: 0.95rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .node-tagline {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .node-card-body {
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Spec table */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .spec-table tr {
+      border-bottom: 1px solid rgba(244, 199, 106, 0.06);
+    }
+
+    .spec-table tr:last-child { border-bottom: none; }
+
+    .spec-table td:first-child {
+      color: var(--gold-soft);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem 0.35rem 0;
+      white-space: nowrap;
+      vertical-align: top;
+    }
+
+    .spec-table td:last-child {
+      color: var(--text);
+      padding: 0.35rem 0;
+      vertical-align: top;
+    }
+
+    .tbd {
+      color: var(--muted);
+      font-style: italic;
+      opacity: 0.55;
+    }
+
+    /* Roles column */
+    .node-roles {
+      border-left: 1px solid var(--border);
+      padding-left: 1.5rem;
+    }
+
+    .roles-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      margin-bottom: 0.75rem;
+    }
+
+    .roles-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.25rem 0;
+    }
+
+    .roles-list li {
+      font-size: 0.84rem;
+      color: var(--muted);
+      padding: 0.22rem 0;
+      border-bottom: 1px solid rgba(244, 199, 106, 0.05);
+    }
+
+    .roles-list li:last-child { border-bottom: none; }
+
+    .node-note {
+      font-size: 0.81rem;
+      color: var(--muted);
+      border-left: 2px solid var(--gold-soft);
+      padding-left: 0.75rem;
+      opacity: 0.75;
+    }
+
+    /* Infrastructure table */
+    .infra-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .infra-table td {
+      padding: 0.5rem 1rem 0.5rem 0;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(244, 199, 106, 0.06);
+      vertical-align: top;
+    }
+
+    .infra-table td:first-child {
+      color: var(--gold-soft);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      width: 200px;
+    }
+
+    /* Decommissioned table */
+    .decom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      opacity: 0.6;
+    }
+
+    .decom-table td {
+      padding: 0.5rem 1rem 0.5rem 0;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(244, 199, 106, 0.05);
+    }
+
+    .decom-table td:first-child {
+      color: var(--gold-soft);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .status-decom {
+      color: #666;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      .node-card-body {
+        grid-template-columns: 1fr;
+      }
+      .node-roles {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+      }
+      .node-card-header {
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <img src="logo.png" alt="Phoenix Network Logo" class="header-logo" />
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="mission.html">Mission</a>
+      <a href="nodes.html" class="active">Nodes</a>
+      <a href="projects.html">Projects</a>
+    </nav>
+  </header>
+
+  <main class="page-wrapper">
+    <div class="plaque node-wrapper">
+
+      <!-- Directory Header -->
+      <div class="plaque-header">
+        <img src="logo.png" alt="Phoenix Network Logo" class="dir-logo" />
+        <h2 class="plaque-title">NODE DIRECTORY</h2>
+        <p class="plaque-motto">PHOENIX NETWORK &bull; PHOENIXNETWORK.INFO</p>
+      </div>
+
+      <!-- Node Index -->
+      <table class="node-index">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Node</th>
+            <th>Platform</th>
+            <th>Status</th>
+            <th>Primary Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>01</td>
+            <td class="node-name">PhoenixPrime</td>
+            <td>CORSAIR 4000D RS ARGB</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>Operator Workstation / AI Hub</td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td class="node-name">WonderCave</td>
+            <td>Equus Nobilis Workstation</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>General Server / Storage Node</td>
+          </tr>
+          <tr>
+            <td>03</td>
+            <td class="node-name">DeepLumen</td>
+            <td>Custom AMD Build</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>GPU Compute / AI Inference</td>
+          </tr>
+          <tr>
+            <td>04</td>
+            <td class="node-name">PhoenixArchive</td>
+            <td>HP Compaq Elite 8300 USDT</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>Long-Term Archival Storage</td>
+          </tr>
+          <tr>
+            <td>05</td>
+            <td class="node-name">PhoenixOffice</td>
+            <td class="tbd">TBD</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>Office Productivity Workstation</td>
+          </tr>
+          <tr>
+            <td>06</td>
+            <td class="node-name">PhoenixNOC</td>
+            <td class="tbd">TBD</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>Network Operations Center</td>
+          </tr>
+          <tr>
+            <td>07</td>
+            <td class="node-name">PhoenixFun</td>
+            <td class="tbd">TBD</td>
+            <td class="status-active"><span class="status-dot"></span>Active</td>
+            <td>Entertainment / Media</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr class="section-divider" />
+      <p class="section-label">Active Nodes</p>
+
+      <!-- NODE 01: PhoenixPrime -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 01</span>
+          <span class="node-title">PhoenixPrime</span>
+          <span class="node-tagline">"The seat of the operator. Where decisions become commands."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>PhoenixPrime</td></tr>
+              <tr><td>Platform</td><td>CORSAIR 4000D RS ARGB Mid-Tower</td></tr>
+              <tr><td>CPU</td><td>AMD Ryzen 9 5950X &mdash; 16c / 32t</td></tr>
+              <tr><td>RAM</td><td>32 GB</td></tr>
+              <tr><td>Motherboard</td><td>Asus ROG Strix B550-F Gaming WiFi II</td></tr>
+              <tr><td>Storage</td><td>Samsung 990 PRO 1 TB NVMe &middot; SPCC 1 TB SSD &times; 2</td></tr>
+              <tr><td>GPU</td><td class="tbd">Integrated / Unspecified</td></tr>
+              <tr><td>OS</td><td class="tbd">Operator Managed</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>Operator Workstation</li>
+              <li>Network Command Console</li>
+              <li>Development Environment</li>
+              <li>AI Operations Hub</li>
+            </ul>
+            <p class="node-note">Primary seat for all network management, development, and AI orchestration tasks.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 02: WonderCave -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 02</span>
+          <span class="node-title">WonderCave</span>
+          <span class="node-tagline">"Secrets buried deep. Services that never sleep."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>WonderCave</td></tr>
+              <tr><td>Platform</td><td>Equus Nobilis Workstation</td></tr>
+              <tr><td>CPU</td><td>Intel Core i5-4590</td></tr>
+              <tr><td>RAM</td><td>32 GB DDR3</td></tr>
+              <tr><td>Motherboard</td><td class="tbd">Equus Nobilis OEM</td></tr>
+              <tr><td>Storage</td><td>500 GB SATA &middot; 1 TB RAID1 &middot; 256 GB NVMe &middot; 500 GB NVMe &middot; Root: LVM</td></tr>
+              <tr><td>GPU</td><td>None</td></tr>
+              <tr><td>OS</td><td>Ubuntu Server</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>General-Purpose Server</li>
+              <li>Internal Services Hosting</li>
+              <li>Storage Node</li>
+              <li>LVM-Managed Data Pool</li>
+            </ul>
+            <p class="node-note">Multi-drive configuration with LVM root. Reliable mid-tier compute and storage platform.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 03: DeepLumen -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 03</span>
+          <span class="node-title">DeepLumen</span>
+          <span class="node-tagline">"The eye that sees through the dark. Render. Infer. Illuminate."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>DeepLumen</td></tr>
+              <tr><td>Platform</td><td>Custom AMD Build</td></tr>
+              <tr><td>CPU</td><td>AMD Ryzen 7 5700G &mdash; 8c / 16t</td></tr>
+              <tr><td>RAM</td><td>16 GB DDR4</td></tr>
+              <tr><td>Motherboard</td><td>ASUS PRIME B550M-A WIFI II</td></tr>
+              <tr><td>Storage</td><td>PNY CS2241 500 GB NVMe</td></tr>
+              <tr><td>GPU</td><td>NVIDIA RTX 3060 &mdash; 12 GB VRAM</td></tr>
+              <tr><td>OS</td><td>Ubuntu 24.04.4 LTS</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>GPU Compute Node</li>
+              <li>AI Inference</li>
+              <li>Machine Learning Workloads</li>
+              <li>Media Encoding / Rendering</li>
+            </ul>
+            <p class="node-note">Primary inference engine for local AI model serving. RTX 3060 12 GB powers network-wide GPU compute.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 04: PhoenixArchive -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 04</span>
+          <span class="node-title">PhoenixArchive</span>
+          <span class="node-tagline">"Nothing forgotten. Everything preserved. Time is just another index."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>PhoenixArchive</td></tr>
+              <tr><td>Platform</td><td>HP Compaq Elite 8300 USDT</td></tr>
+              <tr><td>CPU</td><td>Intel Core i5-3470S</td></tr>
+              <tr><td>RAM</td><td>16 GB</td></tr>
+              <tr><td>Motherboard</td><td>HP Compaq Elite 8300 OEM</td></tr>
+              <tr><td>Storage</td><td>Samsung 860 EVO 250 GB (OS) &middot; Sabrent 1 TB &times; 4 (HDDA&ndash;HDDD)</td></tr>
+              <tr><td>GPU</td><td>None &mdash; USDT form factor</td></tr>
+              <tr><td>OS</td><td class="tbd">Linux (Operator Managed)</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>Long-Term Archival Storage</li>
+              <li>Backup Target</li>
+              <li>Cold Data Repository</li>
+              <li>Historical Record Keeping</li>
+            </ul>
+            <p class="node-note">Four-drive array mapped HDDA&ndash;HDDD. 4 TB raw archival capacity. Low-power, reliable USDT platform.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 05: PhoenixOffice -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 05</span>
+          <span class="node-title">PhoenixOffice</span>
+          <span class="node-tagline">"The clock never stops. Neither does the workload."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>PhoenixOffice</td></tr>
+              <tr><td>Platform</td><td class="tbd">TBD</td></tr>
+              <tr><td>CPU</td><td class="tbd">TBD</td></tr>
+              <tr><td>RAM</td><td>32 GB</td></tr>
+              <tr><td>Motherboard</td><td class="tbd">TBD</td></tr>
+              <tr><td>Storage</td><td class="tbd">TBD</td></tr>
+              <tr><td>GPU</td><td class="tbd">TBD</td></tr>
+              <tr><td>OS</td><td class="tbd">TBD</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>Office Productivity Workstation</li>
+              <li>File Access</li>
+              <li>Document Management</li>
+              <li>Operational Support</li>
+            </ul>
+            <p class="node-note">RAM confirmed at 32 GB. Remaining hardware specifications pending operator documentation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 06: PhoenixNOC -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 06</span>
+          <span class="node-title">PhoenixNOC</span>
+          <span class="node-tagline">"The network watches itself. All signals flow through here."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>PhoenixNOC <span style="font-size:0.75rem;color:var(--muted);font-style:italic;">(formerly NeonForge-02)</span></td></tr>
+              <tr><td>Platform</td><td class="tbd">TBD</td></tr>
+              <tr><td>CPU</td><td class="tbd">TBD</td></tr>
+              <tr><td>RAM</td><td class="tbd">TBD</td></tr>
+              <tr><td>Motherboard</td><td class="tbd">TBD</td></tr>
+              <tr><td>Storage</td><td class="tbd">TBD</td></tr>
+              <tr><td>GPU</td><td>None</td></tr>
+              <tr><td>OS</td><td class="tbd">TBD</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>Network Operations Center</li>
+              <li>Monitoring &amp; Alerting</li>
+              <li>Diagnostics</li>
+              <li>Traffic Analysis</li>
+              <li>Uptime Tracking</li>
+            </ul>
+            <p class="node-note">Repurposed from NeonForge-02. Designated network monitoring hub. Full hardware profile pending.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODE 07: PhoenixFun -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NODE 07</span>
+          <span class="node-title">PhoenixFun</span>
+          <span class="node-tagline">"All work and no play is a misconfigured node. This one's for the people."</span>
+        </div>
+        <div class="node-card-body">
+          <div>
+            <table class="spec-table">
+              <tr><td>Status</td><td class="status-active"><span class="status-dot"></span>Active</td></tr>
+              <tr><td>Hostname</td><td>PhoenixFun</td></tr>
+              <tr><td>Platform</td><td class="tbd">TBD</td></tr>
+              <tr><td>CPU</td><td class="tbd">TBD</td></tr>
+              <tr><td>RAM</td><td class="tbd">TBD</td></tr>
+              <tr><td>Motherboard</td><td class="tbd">TBD</td></tr>
+              <tr><td>Storage</td><td class="tbd">TBD</td></tr>
+              <tr><td>GPU</td><td class="tbd">TBD</td></tr>
+              <tr><td>OS</td><td class="tbd">TBD</td></tr>
+            </table>
+          </div>
+          <div class="node-roles">
+            <p class="roles-label">Primary Roles</p>
+            <ul class="roles-list">
+              <li>Entertainment</li>
+              <li>Media Serving</li>
+              <li>Gaming</li>
+              <li>Recreational Services</li>
+            </ul>
+            <p class="node-note">External reachability via tetravalent.dcoleman.net unconfirmed. Local network access only until routing is verified.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decommissioned -->
+      <hr class="section-divider" />
+      <p class="section-label">Decommissioned Nodes</p>
+      <table class="decom-table">
+        <tr>
+          <td>PhoenixRes</td>
+          <td>Residential Node</td>
+          <td><span class="status-decom">&#x2715; Decommissioned</span></td>
+          <td>Removed from service. No longer part of the Phoenix Network.</td>
+        </tr>
+      </table>
+
+      <!-- Infrastructure -->
+      <hr class="section-divider" />
+      <p class="section-label">Network Infrastructure</p>
+      <table class="infra-table">
+        <tr>
+          <td>Gateway</td>
+          <td><strong style="color:var(--text);">PhoenixCore</strong> &mdash; Asus Router &middot; Asuswrt-Merlin &middot; aarch64 &middot; Linux 4.19.183</td>
+        </tr>
+        <tr>
+          <td>USB Share &mdash; SHUTTLE</td>
+          <td>1 TB USB Drive &middot; Samba via PhoenixCore</td>
+        </tr>
+        <tr>
+          <td>USB Share &mdash; WDSSD500GB</td>
+          <td>500 GB WD SSD &middot; Samba via PhoenixCore</td>
+        </tr>
+      </table>
+
+      <div class="plaque-footer">
+        PHOENIX NETWORK &bull; NODE DIRECTORY &bull; OPERATOR REFERENCE &bull; MAY 2026
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; <span id="year"></span> Phoenix Network</span>
+    <span class="footer-motto">FIRE BELOW &bull; FLIGHT ABOVE</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
