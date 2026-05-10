@@ -6,49 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header class="site-header">
-    <div class="logo">Phoenix<span>Network</span></div>
-    <nav class="nav">
-      <a href="#about">About</a>
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
+    <img src="logo.png" alt="Phoenix Network Logo" class="header-logo" />
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <a href="mission.html">Mission</a>
+      <a href="nodes.html">Nodes</a>
+      <a href="projects.html">Projects</a>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <h1>Rise. Build. Connect.</h1>
-      <p>Infrastructure, automation, and networks that refuse to stay down.</p>
-      <button id="cta-btn">Get in touch</button>
-    </section>
+  <main class="hero">
+    <h1 class="hero-title">PHOENIX NETWORK</h1>
+    <p class="hero-motto">FIRE BELOW • FLIGHT ABOVE</p>
 
-    <section id="about" class="panel">
-      <h2>About Phoenix Network</h2>
-      <p>
-        Phoenix Network focuses on resilient systems, lab networks, and experimental infrastructure.
-      </p>
-    </section>
-
-    <section id="services" class="panel">
-      <h2>What we do</h2>
-      <ul>
-        <li>Lab and homelab network design</li>
-        <li>Automation & monitoring experiments</li>
-        <li>Prototyping weird ideas that probably shouldn’t work—but do</li>
-      </ul>
-    </section>
-
-    <section id="contact" class="panel">
-      <h2>Contact</h2>
-      <p>Email: <a href="mailto:info@phoenixnetwork.info">info@phoenixnetwork.info</a></p>
-    </section>
+    <p class="hero-desc">
+      A disciplined architecture of systems that rise, endure, and evolve.
+      Hardware, software, and human intent — unified under one signal.
+    </p>
   </main>
 
   <footer class="site-footer">
-    <small>© <span id="year"></span> Phoenix Network</small>
+    <span>© <span id="year"></span> Phoenix Network</span>
+    <span class="footer-motto">FIRE BELOW • FLIGHT ABOVE</span>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
