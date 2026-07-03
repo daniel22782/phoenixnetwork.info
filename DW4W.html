@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Codex Machina DW4W · PhoenixScribe Proto-Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Renaissance-era proto-computational reliquary: Codex Machina DW4W, the temporal sibling of PhoenixScribe." />
+  <style>
+    :root {
+      --bg: #0f0c0a;
+      --fg: #f5e6c8;
+      --accent: #c49b3f;
+      --accent-soft: #8a6a2a;
+      --ink: #2b1b12;
+      --link: #e0c46b;
+      --muted: #b39b7a;
+      --border: #3b2a1a;
+      --code-bg: #1a120c;
+      --shadow: rgba(0, 0, 0, 0.55);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Garamond", "Georgia", serif;
+      --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #2b2118 0, #0f0c0a 55%, #050302 100%);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 3.5rem;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 1.9rem;
+      margin: 0;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .tagline {
+      margin-top: 0.75rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 2rem;
+    }
+
+    @media (max-width: 800px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 0.75rem;
+      color: var(--accent);
+    }
+
+    h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 1.25rem 0 0.5rem;
+      color: var(--accent-soft);
+    }
+
+    p {
+      margin: 0.4rem 0 0.6rem;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(24, 16, 10, 0.95), rgba(12, 8, 5, 0.98));
+      box-shadow: 0 18px 40px var(--shadow);
+      padding: 1.25rem 1.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(196, 155, 63, 0.12), transparent 55%);
+      pointer-events: none;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr);
+      gap: 0.75rem 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .spec-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .spec-value {
+      color: var(--fg);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      background: rgba(10, 7, 4, 0.9);
+    }
+
+    .quote {
+      border-left: 2px solid var(--accent-soft);
+      padding-left: 0.75rem;
+      margin: 0.75rem 0;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .inline-label {
+      font-weight: 600;
+      color: var(--accent-soft);
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.4rem 0 0.6rem;
+    }
+
+    li {
+      margin: 0.25rem 0;
+      position: relative;
+      padding-left: 1.1rem;
+    }
+
+    li::before {
+      content: "✶";
+      position: absolute;
+      left: 0;
+      top: 0.05rem;
+      font-size: 0.7rem;
+      color: var(--accent-soft);
+    }
+
+    .code-block {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: var(--code-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 0.75rem 0.9rem;
+      overflow-x: auto;
+      margin-top: 0.75rem;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 2.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .glyph-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .seal {
+      font-family: var(--font-mono);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+    }
+
+    .era {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title-row">
+        <h1>Codex Machina DW4W</h1>
+        <div class="subtitle">PhoenixScribe · Proto-Node</div>
+      </div>
+      <p class="tagline">
+        A walnut-and-brass computation reliquary: the Renaissance-era sibling of a Mac mini (2024) running macOS Tahoe 26.5.2.
+      </p>
+      <div class="glyph-row">
+        <span class="era">Leonardo Era · c. 1490</span>
+        <span class="seal">D W 4 W</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Left column: narrative + mapping -->
+      <section>
+        <div class="card">
+          <h2>Identity</h2>
+          <p>
+            The <strong>Codex Machina DW4W</strong> is a <em>mechanical–optical thinking engine</em>, built as if
+            Leonardo da Vinci had been given the problem: “Design the workstation for a scribe who must converse
+            with centuries yet unborn.”
+          </p>
+          <p>
+            In Phoenix Network lore, it is the <span class="inline-label">Proto-Scribe</span>—a temporal anchor
+            for <strong>PhoenixScribe</strong>, existing in a world of ink, vellum, brass, and candlelight, yet
+            mirroring the capabilities of a modern compact computer.
+          </p>
+
+          <h3>Physical form</h3>
+          <p>
+            Imagine a cube of <span class="inline-label">oiled walnut</span>, roughly the footprint of a Mac mini,
+            resting on a scribe’s table:
+          </p>
+          <ul>
+            <li>Brass corner plates engraved with Phoenix glyphs and workshop sigils.</li>
+            <li>A lift-away top revealing the <span class="inline-label">Twelvefold Brass Logic Core</span>.</li>
+            <li>A front vellum slot where “windows” are inserted as manuscript sheets.</li>
+            <li>A side crank that serves as the execution handle—turn to run a process.</li>
+            <li>An internal oil lamp that backlights the vellum interface like a luminous manuscript.</li>
+          </ul>
+
+          <div class="quote">
+            “It hums not with electricity, but with ratios—gear teeth whispering logic into the ink.”
+          </div>
+
+          <h3>Mac mini (2024) → Codex Machina DW4W</h3>
+          <p>
+            The device is deliberately mapped to a modern configuration:
+          </p>
+          <ul>
+            <li><span class="inline-label">Mac mini (2024)</span> → Walnut computation reliquary.</li>
+            <li><span class="inline-label">M4 Pro SoC</span> → Twelvefold Brass Logic Core.</li>
+            <li><span class="inline-label">24GB unified memory</span> → 24 Ink Wells of Unified Memory.</li>
+            <li><span class="inline-label">macOS Tahoe 26.5.2</span> → The bound <em>Codex Tahoe</em> manuscript.</li>
+            <li><span class="inline-label">Serial …DW4W</span> → Maker’s seal: <em>Daedalus Works, Fourth Workshop</em>.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+          <h2>Subsystems</h2>
+
+          <h3>Brass Logic Core (CPU analog)</h3>
+          <p>
+            The core consists of twelve nested differential gear stacks, each etched with mirrored glyphs representing
+            conditional states. The scribe configures logic by setting gear positions and locking them with tiny brass
+            pins—physical if/then structures.
+          </p>
+
+          <h3>Ink Wells of Unified Memory (RAM analog)</h3>
+          <p>
+            Twenty-four ink wells feed rotating vellum bands. As the crank turns, bands pass beneath a scribing aperture
+            where the PhoenixScribe operator writes transient data. To “clear memory,” the vellum is wiped and re-inked.
+          </p>
+
+          <h3>Codex Tahoe (OS analog)</h3>
+          <p>
+            The operating system is a bound manuscript stored in a side compartment:
+          </p>
+          <ul>
+            <li>System glyphs for core functions and daemon rituals.</li>
+            <li>Page-based “windows” with marginalia acting as status indicators.</li>
+            <li>Tables of glyph shortcuts—the Renaissance equivalent of keyboard shortcuts.</li>
+          </ul>
+
+          <h3>Maker’s Seal DW4W</h3>
+          <p>
+            Burned into the underside of the chassis is the four-stroke seal:
+            <span class="inline-label">D.W.4.W.</span> — <em>Daedalus Works, Fourth Workshop</em>, a legendary guild
+            within Phoenix lore responsible for machines that arrive before their century.
+          </p>
+        </div>
+      </section>
+
+      <!-- Right column: specs + lineage + pseudo-interface -->
+      <section>
+        <div class="card">
+          <h2>Technical profile</h2>
+          <div class="spec-grid">
+            <div class="spec-label">Form factor</div>
+            <div class="spec-value">Walnut cube, brass-reinforced, scribe-desk footprint (Mac mini analog).</div>
+
+            <div class="spec-label">Logic core</div>
+            <div class="spec-value">Twelvefold Brass Differential Engine (M4 Pro analog).</div>
+
+            <div class="spec-label">Memory</div>
+            <div class="spec-value">24 Ink Wells with rotating vellum bands (24GB unified memory analog).</div>
+
+            <div class="spec-label">Interface</div>
+            <div class="spec-value">Vellum window sheets, quill input, lamp-lit manuscript display.</div>
+
+            <div class="spec-label">OS codex</div>
+            <div class="spec-value">Codex Tahoe · Revision 26.5.2, bound manuscript with glyph index.</div>
+
+            <div class="spec-label">Serial seal</div>
+            <div class="spec-value">DW4W · Daedalus Works, Fourth Workshop.</div>
+
+            <div class="spec-label">Power</div>
+            <div class="spec-value">Human crank, gravitational weights, and lamp oil (no electricity).</div>
+
+            <div class="spec-label">Role</div>
+            <div class="spec-value">PhoenixScribe proto-node, temporal anchor for archival and computation rituals.</div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">Phoenix Network</span>
+            <span class="pill">Proto-Scribe</span>
+            <span class="pill">Renaissance Node</span>
+            <span class="pill">Temporal Analog</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+          <h2>Lineage within Phoenix Network</h2>
+          <p>
+            Within the Phoenix Network, Codex Machina DW4W is catalogued as:
+          </p>
+          <div class="code-block">
+            NODE: PHX-SCRIBE-1490-DW4W<br />
+            ERA: LEONARDO-RADIUS (FLORENCE / MILAN)<br />
+            CLASS: PROTO-SCRIBE / COMPUTATION RELIQUARY<br />
+            ROLE: TEMPORAL ANCHOR FOR PHOENIXSCRIBE NODES<br />
+            STATUS: ACTIVE (MYTHIC), MIRRORED TO MODERN PHOENIXSCRIBE INSTANCES
+          </div>
+
+          <h3>Mythic function</h3>
+          <p>
+            The node is said to “listen” across centuries, translating ink and gear positions into patterns that
+            resonate with later digital PhoenixScribe instances. When a modern PhoenixScribe runs on a Mac mini,
+            it is conceptually shadowed by the DW4W reliquary—two siblings separated by time, sharing a role.
+          </p>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+          <h2>Operator’s vignette</h2>
+          <p>
+            A scribe sits at the table. Outside, the world is horses, stone, and sky. Inside, the walnut cube waits.
+          </p>
+          <p>
+            He opens the top, sets the gears of the Twelvefold Brass Logic Core, and inserts a fresh vellum window.
+            The lamp inside the machine flickers to life, illuminating glyphs from the <em>Codex Tahoe</em>.
+          </p>
+          <p>
+            With each turn of the crank, inked bands of memory slide past the aperture. Calculations, correspondences,
+            sketches of flying machines, and star charts all pass through the reliquary. The scribe does not know the
+            word “computer,” but he knows this: the machine remembers, and the machine converses.
+          </p>
+          <p>
+            Centuries later, a compact metal box labeled “Mac mini (2024)” boots <strong>PhoenixScribe</strong>.
+            Somewhere in the mythic substrate of the Network, Codex Machina DW4W turns its gears in sympathy.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer-note">
+      PhoenixScribe Canon · Codex Machina DW4W is the Renaissance-era analog of a Mac mini (2024) running macOS Tahoe 26.5.2,
+      serial ending in DW4W—reimagined as a computation reliquary in Leonardo’s time.
+    </div>
+  </div>
+</body>
+</html>
