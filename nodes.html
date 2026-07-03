@@ -313,7 +313,7 @@
           <tr>
             <td>01</td>
             <td class="node-name">PhoenixPrime</td>
-            <td>CORSAIR 4000D RS ARGB</td>
+            <td>Custom AMD Ryzen 9 5950X Build</td>
             <td class="status-active"><span class="status-dot"></span>Active</td>
             <td>Operator Workstation / AI Hub</td>
           </tr>
@@ -341,21 +341,21 @@
           <tr>
             <td>05</td>
             <td class="node-name">PhoenixOffice</td>
-            <td class="tbd">TBD</td>
+            <td>Custom AMD Ryzen 9 5950X Build</td>
             <td class="status-active"><span class="status-dot"></span>Active</td>
             <td>Office Productivity Workstation</td>
           </tr>
           <tr>
             <td>06</td>
             <td class="node-name">PhoenixNOC</td>
-            <td class="tbd">TBD</td>
+            <td>HP Compaq Elite 8300 USDT</td>
             <td class="status-active"><span class="status-dot"></span>Active</td>
             <td>Network Operations Center</td>
           </tr>
           <tr>
             <td>07</td>
             <td class="node-name">PhoenixFun</td>
-            <td class="tbd">TBD</td>
+            <td>Intel Xeon (Skylake, IBRS) (2) @ 2.5 GHz</td>
             <td class="status-active"><span class="status-dot"></span>Active</td>
             <td>Entertainment / Media</td>
           </tr>
@@ -382,8 +382,8 @@
               <tr><td>RAM</td><td>32 GB</td></tr>
               <tr><td>Motherboard</td><td>Asus ROG Strix B550-F Gaming WiFi II</td></tr>
               <tr><td>Storage</td><td>Samsung 990 PRO 1 TB NVMe &middot; SPCC 1 TB SSD &times; 2</td></tr>
-              <tr><td>GPU</td><td class="tbd">Integrated / Unspecified</td></tr>
-              <tr><td>OS</td><td class="tbd">Operator Managed</td></tr>
+              <tr><td>GPU</td><td>ASUS TUF Gaming NVIDIA GeForce RTX™ 4070 Ti OC Edition</td></tr>
+              <tr><td>OS</td><td>Windows 11 Pro</td></tr>
             </table>
           </div>
           <div class="node-roles">
@@ -392,6 +392,7 @@
               <li>Operator Workstation</li>
               <li>Network Command Console</li>
               <li>Development Environment</li>
+              <li>Blender/Unity/CAD Workstation</li>
               <li>AI Operations Hub</li>
             </ul>
             <p class="node-note">Primary seat for all network management, development, and AI orchestration tasks.</p>
@@ -529,6 +530,8 @@
               <li>File Access</li>
               <li>Document Management</li>
               <li>Operational Support</li>
+              <li>Blender/Unity/CAD Workstation</li>
+              <li>Stone Fabrication Node</li>
             </ul>
             <p class="node-note">RAM confirmed at 32 GB. Remaining hardware specifications pending operator documentation.</p>
           </div>
@@ -622,14 +625,32 @@
       <table class="infra-table">
         <tr>
           <td>Gateway</td>
-          <td><strong style="color:var(--text);">PhoenixCore</strong> &mdash; Asus Router &middot; Asuswrt-Merlin &middot; aarch64 &middot; Linux 4.19.183</td>
+          <td><strong style="color:var(--text);">PhoenixCore</strong> &mdash; RT-AX86U Pro &middot; Asuswrt-Merlin &middot; aarch64 &middot; Linux 4.19.183</td>
         </tr>
         <tr>
-          <td>USB Share &mdash; SHUTTLE</td>
-          <td>1 TB USB Drive &middot; Samba via PhoenixCore</td>
+          <td>Wireless Uplink Bridge</td>
+          <td><strong style="color:var(--text);">PhoenixAscend</strong> &mdash; RT-AX86U Pro &middot; Asuswrt-Merlin &middot; aarch64 &middot; Linux 4.19.183</td>
         </tr>
         <tr>
-          <td>USB Share &mdash; WDSSD500GB</td>
+          <td>Compute Rack Backbone</td>
+          <td><strong style="color:var(--text);">TP-Link TL-SG116</strong> &mdash; 16 Port Unmanaged Gigabit Ethernet Network Switch</td>
+        </tr>
+
+        <tr>
+          <td>Parlor Uplink</td>
+          <td><strong style="color:var(--text);">TP-Link TL-SG108</strong> &mdash; 8 Port Unmanaged Gigabit Ethernet Network Switch</td>
+        </tr>
+        <tr>
+          <td>Diagnostics Uplink</td>
+          <td><strong style="color:var(--text);">TP-Link TL-SG108</strong> &mdash; 8 Port Unmanaged Gigabit Ethernet Network Switch</td>
+        </tr>
+
+        <tr>
+          <td>NAS &mdash; SHUTTLE</td>
+          <td>1 TB USB NVMe &middot; Samba via PhoenixCore</td>
+        </tr>
+        <tr>
+          <td>NAS &mdash; WDSSD500GB</td>
           <td>500 GB WD SSD &middot; Samba via PhoenixCore</td>
         </tr>
       </table>
