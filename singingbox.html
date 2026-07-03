@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blue Box That Sang – PhoenixNetwork</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A short fictional intro to 2600 culture for Lara – the story of the Blue Box that sang to the phone system.">
+  <style>
+    :root {
+      --bg: #050814;
+      --bg-alt: #0b1020;
+      --fg: #e6f0ff;
+      --accent: #4fb3ff;
+      --accent-soft: rgba(79, 179, 255, 0.18);
+      --muted: #9bb0d4;
+      --heading: #f5fbff;
+      --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      background: radial-gradient(circle at top, #101a33 0, var(--bg) 55%, #02040a 100%);
+      color: var(--fg);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .page {
+      max-width: 880px;
+      width: 100%;
+      padding: 32px 20px 40px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(155, 176, 212, 0.25);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .node-label {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(79, 179, 255, 0.4);
+      background: linear-gradient(90deg, rgba(79, 179, 255, 0.12), rgba(5, 8, 20, 0.9));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.9rem;
+      letter-spacing: 0.04em;
+      color: var(--heading);
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .meta {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .meta span::before {
+      content: "◆ ";
+      color: var(--accent);
+    }
+
+    main {
+      background: linear-gradient(145deg, var(--bg-alt), #050814);
+      border-radius: 18px;
+      border: 1px solid rgba(79, 179, 255, 0.35);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.9),
+        0 18px 40px rgba(0, 0, 0, 0.85),
+        0 0 60px rgba(79, 179, 255, 0.18);
+      padding: 22px 22px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-band {
+      position: absolute;
+      inset: -40%;
+      opacity: 0.18;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(79, 179, 255, 0.7), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(151, 120, 255, 0.6), transparent 55%);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .lede {
+      font-size: 1.02rem;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.98rem;
+      line-height: 1.7;
+      margin: 0 0 14px;
+      color: var(--fg);
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .soft {
+      color: var(--muted);
+    }
+
+    .pull {
+      margin: 18px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px dashed rgba(79, 179, 255, 0.45);
+      background: radial-gradient(circle at 0 0, var(--accent-soft), transparent 70%);
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+
+    .pull span {
+      display: block;
+      margin-top: 4px;
+      color: var(--fg);
+      font-family: var(--sans);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      text-align: right;
+    }
+
+    .footer-note strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 22px 14px 30px;
+      }
+      main {
+        padding: 18px 16px 20px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="node-label">PN‑SINGINGBOX‑01 · 2600 PRIMER</div>
+      <div style="flex-basis: 100%;"></div>
+      <div>
+        <h1>The Blue Box That Sang</h1>
+        <div class="subtitle">A short fictional intro to 2600 culture for Lara</div>
+        <div class="meta">
+          <span>Lineage: Phone Phreak → 2600 → PhoenixNetwork</span>
+          <span>Mode: Story · Orientation · Invitation</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="glow-band" aria-hidden="true"></div>
+      <div class="content">
+        <p class="lede">
+          Long before smartphones, long before apps, long before the internet had pictures, the world ran on a hidden music.
+        </p>
+
+        <p>
+          It was the music of the phone system.
+          Not the ringing — not the voices — but the tones underneath everything.
+          Invisible. Precise. Perfect.
+          A secret language spoken only by machines.
+        </p>
+
+        <p>
+          Most people never heard it.
+          But a few did.
+        </p>
+
+        <p class="soft">
+          They were curious kids, night owl tinkerers, radio nerds, musicians, engineers, misfits — people who noticed patterns
+          where others saw noise. And one night, one of them discovered something impossible:
+        </p>
+
+        <p>
+          If you played the right tone — exactly <strong>2600 Hz</strong> — the phone system listened.
+        </p>
+
+        <p>
+          It wasn’t magic. It wasn’t hacking. It was understanding.
+          The same way a locksmith understands tumblers, or a musician understands harmony.
+        </p>
+
+        <p>
+          And so the first blue box was born.
+        </p>
+
+        <p>
+          It wasn’t fancy.
+          A little metal case.
+          A few switches.
+          A speaker that could sing the secret notes of the network.
+        </p>
+
+        <p>
+          But when you held it, you weren’t holding a gadget.
+          You were holding a key to the world’s nervous system.
+        </p>
+
+        <p class="pull">
+          2600 Hz: the note that made the network listen.
+          <span>A single tone that said, “I understand how you work.”</span>
+        </p>
+
+        <p>
+          A blue box didn’t break into anything.
+          It spoke to the system in its own language — a language the system had forgotten humans could hear.
+        </p>
+
+        <p>
+          And the people who built them weren’t criminals or rebels.
+          They were explorers.
+        </p>
+
+        <p>
+          They mapped the hidden architecture of the global phone network the same way early astronomers mapped the stars.
+          They learned how machines talked to machines.
+          They discovered the boundaries of a system no one had ever seen from the outside.
+        </p>
+
+        <p>
+          They were the first to realize:
+        </p>
+
+        <p class="pull">
+          “Technology is not just something you use. It’s something you can understand.”
+          <span>Curiosity as a compass. Understanding as a kind of music.</span>
+        </p>
+
+        <p>
+          And that idea — that curiosity, that willingness to open the hood of the world and see how it works —
+          became the foundation of modern hacker culture.
+        </p>
+
+        <p>
+          It became the spirit of <strong>2600</strong>.
+        </p>
+
+        <p>
+          Not breaking things.
+          Not stealing things.
+          But learning, sharing, exploring, and respecting the systems that shape our lives.
+        </p>
+
+        <p>
+          Tonight, when you and Daniel walk into Houston 2600 wearing the Blue Box shirts, you’re not wearing nostalgia.
+        </p>
+
+        <p>
+          You’re wearing lineage.
+        </p>
+
+        <p>
+          You’re wearing the symbol of the moment humans first realized they could talk to machines — and machines would talk back.
+        </p>
+
+        <p>
+          You’re wearing the emblem of curiosity, of cleverness, of the quiet joy of figuring out how something works
+          just because it’s beautiful.
+        </p>
+
+        <p>
+          And when someone at the meetup sees your shirts, they won’t just see the design.
+        </p>
+
+        <p>
+          They’ll see the story.
+          They’ll see the music.
+        </p>
+
+        <p>
+          They’ll see two people walking in wearing the symbol of the first explorers of the digital world — and they’ll know you belong.
+        </p>
+
+        <div class="footer-note">
+          <strong>PHOENIXNETWORK · SINGINGBOX</strong> · a small story for Lara, tuned to 2600 Hz.
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
