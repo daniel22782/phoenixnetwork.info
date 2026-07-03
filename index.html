@@ -2,41 +2,833 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Phoenix Network</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>PhoenixNetwork.info Homepage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#050302',
+            'bg-mid': '#0f0c08',
+            'bg-warm': '#1a1108',
+            gold: '#F4C76A',
+            'gold-soft': '#c49b3f',
+            'gold-dim': '#8a6a2a',
+            text: '#f0e6cc',
+            muted: '#a89070',
+            border: 'rgba(244,199,106,0.12)',
+            green: '#3eca6e',
+          },
+          fontFamily: {
+            display: ['"EB Garamond"', 'Georgia', 'serif'],
+            body: ['system-ui', '-apple-system', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --bg: #050302;
+      --bg-mid: #0f0c08;
+      --bg-warm: #1a1108;
+      --gold: #F4C76A;
+      --gold-soft: #c49b3f;
+      --gold-dim: #8a6a2a;
+      --text: #f0e6cc;
+      --muted: #a89070;
+      --border: rgba(244,199,106,0.12);
+      --green: #3eca6e;
+    }
 
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+
+    /* Pulsing green dot */
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.5; }
+    }
+    .pulse-dot {
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* Gold glow on hover */
+    .node-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      border: 1px solid var(--border);
+    }
+    .node-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(244,199,106,0.15), 0 0 0 1px rgba(244,199,106,0.25);
+      border-color: var(--gold-dim);
+    }
+
+    /* Fade-in on scroll */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    .fade-in-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scanline texture */
+    .scanline-bg {
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(244,199,106,0.02) 2px,
+        rgba(244,199,106,0.02) 4px
+      );
+    }
+
+    /* Chevron bounce */
+    @keyframes bounce-down {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+    .bounce-chevron {
+      animation: bounce-down 2.5s ease-in-out infinite;
+    }
+
+    /* Sticky header */
+    #site-header-hdr0 {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Section watermark */
+    .section-number {
+      font-size: 8rem;
+      line-height: 1;
+      color: rgba(244,199,106,0.04);
+      font-family: 'EB Garamond', Georgia, serif;
+      position: absolute;
+      top: -1rem;
+      right: 2rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @media (max-width: 767px) {
+      .section-number {
+        font-size: 5rem;
+        right: 1rem;
+      }
+    }
+
+    /* CTA buttons */
+    .btn-gold {
+      background: var(--gold);
+      color: var(--bg);
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .btn-gold:hover {
+      background: var(--gold-soft);
+      box-shadow: 0 0 24px rgba(244,199,106,0.3);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--gold);
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      border: 1px solid var(--gold-dim);
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--gold);
+      background: rgba(244,199,106,0.06);
+      box-shadow: 0 0 16px rgba(244,199,106,0.15);
+    }
+
+    /* Hero canvas */
+    #ember-canvas-cnvs {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Infra table */
+    .infra-row {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .infra-row:hover {
+      background: rgba(244,199,106,0.03);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    /* Reliquary art */
+    .reliquary-art {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.7rem;
+      line-height: 1.35;
+      color: var(--gold-soft);
+      white-space: pre;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .reliquary-art {
+        font-size: 0.5rem;
+        line-height: 1.25;
+      }
+    }
+  </style>
 </head>
+<body data-id="0" class="bg-bg text-text">
+  <app-icon data-id="1" hidden data-icon="flame" data-palette="Yellow"></app-icon>
 
-<body>
-  <header class="site-header">
-    <img src="logo.png" alt="Phoenix Network Logo" class="header-logo" />
-    <nav>
-      <a href="index.html" class="active">Home</a>
-      <a href="mission.html">Mission</a>
-      <a href="nodes.html">Nodes</a>
-      <a href="projects.html">Projects</a>
-    </nav>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STICKY HEADER / NAV                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header data-id="2" id="site-header-hdr0" class="fixed top-0 left-0 right-0 z-50 border-b border-gold-dim/30" style="background: rgba(5,3,2,0.85);">
+    <div data-id="3" class="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-16">
+      <!-- Logo -->
+      <a data-id="4" href="index.html" class="flex items-center gap-3 group" id="logo-link-lnk1">
+        <img data-id="5" src="https://raw.githubusercontent.com/daniel22782/phoenixnetwork.info/main/logo.png" alt="Phoenix Network Logo" width="36" height="36" class="transition-transform group-hover:scale-110" style="object-fit: contain;" />
+        <span data-id="6" class="font-display text-gold text-lg tracking-[0.2em] hidden sm:inline">PHOENIX NETWORK</span>
+      </a>
+      <!-- Desktop Nav -->
+      <nav data-id="7" id="desktop-nav-nav1" class="hidden md:flex items-center gap-6">
+        <a data-id="8" href="index.html" class="text-gold text-xs tracking-[0.15em] uppercase hover:text-gold-soft transition-colors font-semibold">Home</a>
+        <a data-id="9" href="mission.html" class="text-muted text-xs tracking-[0.15em] uppercase hover:text-gold transition-colors">Mission</a>
+        <a data-id="10" href="nodes.html" class="text-muted text-xs tracking-[0.15em] uppercase hover:text-gold transition-colors">Nodes</a>
+        <a data-id="11" href="projects.html" class="text-muted text-xs tracking-[0.15em] uppercase hover:text-gold transition-colors">Projects</a>
+        <a data-id="12" href="DW4W.html" class="text-muted text-xs tracking-[0.15em] uppercase hover:text-gold transition-colors border-l border-gold-dim/30 pl-6">Codex</a>
+      </nav>
+      <!-- Mobile hamburger -->
+      <button data-id="13" id="mobile-menu-btn-btn1" class="md:hidden p-2 text-gold" aria-label="Open menu">
+        <i data-id="14" data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
   </header>
 
-  <main class="hero">
-    <h1 class="hero-title">PHOENIX NETWORK</h1>
-    <p class="hero-motto">FIRE BELOW • FLIGHT ABOVE</p>
+  <!-- Mobile Nav Overlay -->
+  <nav data-id="15" id="mobile-menu-nav2" class="hidden fixed inset-0 z-[60] flex flex-col" style="background: rgba(5,3,2,0.97);">
+    <div data-id="16" class="flex justify-between items-center px-4 h-16">
+      <span data-id="17" class="font-display text-gold text-lg tracking-[0.2em]">PHOENIX NETWORK</span>
+      <button data-id="18" id="mobile-menu-close-btn2" class="p-2 text-gold" aria-label="Close menu">
+        <i data-id="19" data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <div data-id="20" class="flex flex-col items-center justify-center flex-1 gap-8">
+      <a data-id="21" href="index.html" class="font-display text-gold text-2xl tracking-[0.2em] uppercase">Home</a>
+      <a data-id="22" href="mission.html" class="font-display text-muted text-2xl tracking-[0.2em] uppercase hover:text-gold transition-colors">Mission</a>
+      <a data-id="23" href="nodes.html" class="font-display text-muted text-2xl tracking-[0.2em] uppercase hover:text-gold transition-colors">Nodes</a>
+      <a data-id="24" href="projects.html" class="font-display text-muted text-2xl tracking-[0.2em] uppercase hover:text-gold transition-colors">Projects</a>
+      <a data-id="25" href="DW4W.html" class="font-display text-muted text-2xl tracking-[0.2em] uppercase hover:text-gold transition-colors">Codex Machina</a>
+    </div>
+    <div data-id="26" class="text-center pb-8 text-gold-dim text-xs tracking-[0.2em] uppercase">Fire Below · Flight Above</div>
+  </nav>
 
-    <p class="hero-desc">
-      A disciplined architecture of systems that rise, endure, and evolve.
-      Hardware, software, and human intent — unified under one signal.
-    </p>
+  <main data-id="27">
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- HERO SECTION                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="28" id="hero-section-hero" class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background: radial-gradient(ellipse at 50% 20%, #1a1108 0%, #0a0704 40%, #050302 80%);">
+      <canvas data-id="29" id="ember-canvas-cnvs"></canvas>
+      <div data-id="30" class="relative z-10 text-center px-4 max-w-3xl mx-auto">
+        <p data-id="31" class="text-gold-dim text-[0.65rem] tracking-[0.35em] uppercase mb-8 font-mono">PhoenixNetwork.info · Established 2024</p>
+        <h1 data-id="32" class="font-display">
+          <span data-id="33" class="block text-gold text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-[0.2em] leading-none" style="text-shadow: 0 0 60px rgba(244,199,106,0.15);">PHOENIX</span>
+          <span data-id="34" class="block text-gold-soft text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-[0.25em] mt-2 leading-none">NETWORK</span>
+        </h1>
+        <div data-id="35" class="w-32 h-px bg-gradient-to-r from-transparent via-gold-soft to-transparent mx-auto my-8"></div>
+        <p data-id="36" class="text-gold text-xs sm:text-sm tracking-[0.3em] uppercase font-semibold" style="font-variant: small-caps;">Fire Below • Flight Above</p>
+        <p data-id="37" class="text-muted text-sm sm:text-base mt-6 max-w-xl mx-auto leading-relaxed font-body">A disciplined architecture of systems that rise, endure, and evolve. Hardware, software, and human intent — unified under one signal.</p>
+        <div data-id="38" class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+          <a data-id="39" href="nodes.html" class="btn-gold inline-block">Explore Nodes</a>
+          <a data-id="40" href="mission.html" class="btn-ghost inline-block">Read Mission</a>
+        </div>
+      </div>
+      <!-- Scroll chevron -->
+      <div data-id="41" class="absolute bottom-8 left-1/2 -translate-x-1/2 bounce-chevron text-gold-dim">
+        <i data-id="42" data-lucide="chevron-down" class="w-6 h-6"></i>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- NETWORK STATUS BAR                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="43" id="status-bar-stat" class="scanline-bg border-y border-gold-dim/20" style="background: #080603;">
+      <div data-id="44" class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[0.7rem] tracking-wider text-gold-dim">
+        <span data-id="45" class="uppercase font-bold text-gold-soft">Network Status</span>
+        <span data-id="46" class="hidden sm:inline text-gold-dim/30">│</span>
+        <span data-id="47" class="flex items-center gap-2">
+          <span data-id="48" class="w-2 h-2 rounded-full bg-green pulse-dot inline-block"></span>
+          <span data-id="49" class="text-green">7 Nodes Active</span>
+        </span>
+        <span data-id="50" class="hidden sm:inline text-gold-dim/30">│</span>
+        <span data-id="51" class="hidden md:inline">Gateway: <span data-id="52" class="text-muted">PhoenixCore RT-AX86U Pro</span></span>
+        <span data-id="53" class="hidden lg:inline text-gold-dim/30">│</span>
+        <span data-id="54" class="hidden lg:inline">Uplink: <span data-id="55" class="text-muted">PhoenixAscend</span></span>
+        <span data-id="56" class="hidden lg:inline text-gold-dim/30">│</span>
+        <span data-id="57" class="hidden lg:inline">Signal: <span data-id="58" class="text-green">NOMINAL</span></span>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- NODE GRID — "THE NETWORK"                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="59" id="network-section-net1" class="relative py-20 md:py-28 px-4 md:px-8 max-w-7xl mx-auto fade-in-section">
+      <div data-id="60" class="section-number">01</div>
+      <div data-id="61" class="mb-12 md:mb-16">
+        <p data-id="62" class="text-gold-dim text-xs tracking-[0.3em] uppercase font-mono mb-2">Section 01</p>
+        <h2 data-id="63" class="font-display text-gold text-3xl md:text-5xl tracking-wide">The Network</h2>
+        <p data-id="64" class="text-muted mt-3 text-sm md:text-base">Seven active nodes. One unified signal.</p>
+      </div>
+
+      <div data-id="65" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        <!-- Node 01: PhoenixPrime -->
+        <div data-id="66" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="67" class="flex items-center justify-between mb-3">
+            <span data-id="68" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 01</span>
+            <span data-id="69" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="70" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="71" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="72" class="font-display text-gold text-xl mb-1">PhoenixPrime</h3>
+          <p data-id="73" class="text-muted text-xs italic mb-3">The seat of the operator. Where decisions become commands.</p>
+          <span data-id="74" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Operator Workstation / AI Hub</span>
+          <p data-id="75" class="font-mono text-gold-dim text-[0.65rem]">AMD Ryzen 9 5950X · RTX 4070 Ti</p>
+        </div>
+
+        <!-- Node 02: WonderCave -->
+        <div data-id="76" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="77" class="flex items-center justify-between mb-3">
+            <span data-id="78" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 02</span>
+            <span data-id="79" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="80" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="81" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="82" class="font-display text-gold text-xl mb-1">WonderCave</h3>
+          <p data-id="83" class="text-muted text-xs italic mb-3">Secrets buried deep. Services that never sleep.</p>
+          <span data-id="84" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">General Server / Storage Node</span>
+          <p data-id="85" class="font-mono text-gold-dim text-[0.65rem]">Intel Core i5-4590 · 32GB DDR3</p>
+        </div>
+
+        <!-- Node 03: DeepLumen -->
+        <div data-id="86" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="87" class="flex items-center justify-between mb-3">
+            <span data-id="88" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 03</span>
+            <span data-id="89" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="90" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="91" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="92" class="font-display text-gold text-xl mb-1">DeepLumen</h3>
+          <p data-id="93" class="text-muted text-xs italic mb-3">The eye that sees through the dark. Render. Infer. Illuminate.</p>
+          <span data-id="94" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">GPU Compute / AI Inference</span>
+          <p data-id="95" class="font-mono text-gold-dim text-[0.65rem]">AMD Ryzen 7 5700G · RTX 3060 12GB</p>
+        </div>
+
+        <!-- Node 04: PhoenixArchive -->
+        <div data-id="96" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="97" class="flex items-center justify-between mb-3">
+            <span data-id="98" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 04</span>
+            <span data-id="99" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="100" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="101" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="102" class="font-display text-gold text-xl mb-1">PhoenixArchive</h3>
+          <p data-id="103" class="text-muted text-xs italic mb-3">Nothing forgotten. Everything preserved. Time is just another index.</p>
+          <span data-id="104" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Long-Term Archival Storage</span>
+          <p data-id="105" class="font-mono text-gold-dim text-[0.65rem]">Intel Core i5-3470S · 4TB Raw Archival</p>
+        </div>
+
+        <!-- Node 05: PhoenixOffice -->
+        <div data-id="106" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="107" class="flex items-center justify-between mb-3">
+            <span data-id="108" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 05</span>
+            <span data-id="109" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="110" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="111" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="112" class="font-display text-gold text-xl mb-1">PhoenixOffice</h3>
+          <p data-id="113" class="text-muted text-xs italic mb-3">The clock never stops. Neither does the workload.</p>
+          <span data-id="114" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Office Productivity Workstation</span>
+          <p data-id="115" class="font-mono text-gold-dim text-[0.65rem]">32 GB RAM · Stone Fabrication Node</p>
+        </div>
+
+        <!-- Node 06: PhoenixNOC -->
+        <div data-id="116" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="117" class="flex items-center justify-between mb-3">
+            <span data-id="118" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 06</span>
+            <span data-id="119" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="120" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="121" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="122" class="font-display text-gold text-xl mb-1">PhoenixNOC</h3>
+          <p data-id="123" class="text-muted text-xs italic mb-3">The network watches itself. All signals flow through here.</p>
+          <span data-id="124" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Network Operations Center</span>
+          <p data-id="125" class="font-mono text-gold-dim text-[0.65rem]">Monitoring & Alerting · Diagnostics</p>
+        </div>
+
+        <!-- Node 07: PhoenixFun -->
+        <div data-id="126" class="node-card rounded-lg p-5 md:p-6" style="background: linear-gradient(135deg, #0f0c08, #0a0805);">
+          <div data-id="127" class="flex items-center justify-between mb-3">
+            <span data-id="128" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.2em]">NODE 07</span>
+            <span data-id="129" class="flex items-center gap-1.5 text-[0.65rem]">
+              <span data-id="130" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+              <span data-id="131" class="text-green tracking-wider uppercase">Active</span>
+            </span>
+          </div>
+          <h3 data-id="132" class="font-display text-gold text-xl mb-1">PhoenixFun</h3>
+          <p data-id="133" class="text-muted text-xs italic mb-3">All work and no play is a misconfigured node. This one's for the people.</p>
+          <span data-id="134" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Entertainment / Media</span>
+          <p data-id="135" class="font-mono text-gold-dim text-[0.65rem]">Gaming · Media Serving</p>
+        </div>
+      </div>
+
+      <!-- PhoenixScribe — Featured Card -->
+      <div data-id="136" class="mt-8 node-card rounded-lg p-6 md:p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #161008, #0d0a05); border-color: var(--gold-dim);">
+        <div data-id="137" class="absolute top-0 right-0 w-64 h-64 rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--gold) 0%, transparent 70%);"></div>
+        <div data-id="138" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div data-id="139" class="flex-1">
+            <div data-id="140" class="flex items-center gap-3 mb-3">
+              <span data-id="141" class="font-mono text-gold text-[0.65rem] tracking-[0.2em]">FEATURED NODE</span>
+              <span data-id="142" class="flex items-center gap-1.5 text-[0.65rem]">
+                <span data-id="143" class="w-1.5 h-1.5 rounded-full bg-green pulse-dot inline-block"></span>
+                <span data-id="144" class="text-green tracking-wider uppercase">Active</span>
+              </span>
+            </div>
+            <h3 data-id="145" class="font-display text-gold text-2xl md:text-3xl mb-1">PhoenixScribe</h3>
+            <p data-id="146" class="text-muted text-sm italic mb-3">The Scribe is always listening. From manuscript to machine — the signal persists.</p>
+            <span data-id="147" class="inline-block text-[0.6rem] tracking-wider uppercase px-2 py-1 rounded border border-gold-dim/40 text-gold-dim mb-3">Proto-Node · Codex Machina</span>
+            <p data-id="148" class="font-mono text-gold-dim text-[0.65rem] mb-4">Mac mini (2024) · M4 Pro · macOS Tahoe</p>
+          </div>
+          <a data-id="149" href="DW4W.html" class="btn-ghost inline-flex items-center gap-2 self-start md:self-center whitespace-nowrap">
+            View Codex <span data-id="150" class="text-base">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FEATURED: CODEX MACHINA DW4W               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="151" id="codex-section-cdx1" class="relative py-20 md:py-28 overflow-hidden fade-in-section" style="background: radial-gradient(ellipse at 30% 50%, #1a1108 0%, #080603 50%, #050302 100%);">
+      <div data-id="152" class="max-w-7xl mx-auto px-4 md:px-8">
+        <div data-id="153" class="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
+          <!-- Left: Text content -->
+          <div data-id="154" class="flex-1 min-w-0">
+            <p data-id="155" class="font-mono text-gold-dim text-[0.65rem] tracking-[0.3em] uppercase mb-3">Featured Artifact · Codex Machina</p>
+            <h2 data-id="156" class="font-display text-gold text-5xl md:text-7xl tracking-wide mb-2" style="text-shadow: 0 0 40px rgba(244,199,106,0.1);">DW4W</h2>
+            <p data-id="157" class="text-muted text-sm mb-6">PhoenixScribe · Proto-Node · Leonardo Era · <span data-id="158" class="italic">c. 1490</span></p>
+            <p data-id="159" class="text-text/90 text-sm md:text-base leading-relaxed mb-6 max-w-xl">A walnut-and-brass computation reliquary: the Renaissance-era sibling of a Mac mini (2024) running macOS Tahoe. Built as if Leonardo da Vinci had been given the problem: design the workstation for a scribe who must converse with centuries yet unborn.</p>
+            <blockquote data-id="160" class="border-l-2 border-gold-dim pl-4 mb-8 max-w-lg">
+              <p data-id="161" class="text-muted italic text-sm leading-relaxed font-display">"It hums not with electricity, but with ratios — gear teeth whispering logic into the ink."</p>
+            </blockquote>
+
+            <!-- Specs grid -->
+            <div data-id="162" class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8 max-w-lg">
+              <div data-id="163">
+                <p data-id="164" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">Logic Core</p>
+                <p data-id="165" class="text-text text-xs">Twelvefold Brass Differential Engine</p>
+              </div>
+              <div data-id="166">
+                <p data-id="167" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">Memory</p>
+                <p data-id="168" class="text-text text-xs">24 Ink Wells · Unified Vellum Bands</p>
+              </div>
+              <div data-id="169">
+                <p data-id="170" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">OS Codex</p>
+                <p data-id="171" class="text-text text-xs">Codex Tahoe · Rev. 26.5.2</p>
+              </div>
+              <div data-id="172">
+                <p data-id="173" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">Maker's Seal</p>
+                <p data-id="174" class="text-text text-xs">D.W.4.W. · Daedalus Works, Fourth Workshop</p>
+              </div>
+              <div data-id="175">
+                <p data-id="176" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">Power</p>
+                <p data-id="177" class="text-text text-xs">Human Crank · Gravitational Weights · Lamp Oil</p>
+              </div>
+              <div data-id="178">
+                <p data-id="179" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase mb-0.5">Era</p>
+                <p data-id="180" class="text-text text-xs">Leonardo Radius · Florence / Milan</p>
+              </div>
+            </div>
+
+            <a data-id="181" href="DW4W.html" class="btn-gold inline-block">Open the Codex</a>
+          </div>
+
+          <!-- Right: Reliquary ASCII Art -->
+          <div data-id="182" class="flex-shrink-0 w-full lg:w-auto flex justify-center lg:justify-end">
+            <div data-id="183" class="p-4 md:p-6 rounded-lg border border-gold-dim/20" style="background: rgba(15,12,8,0.7);">
+              <div data-id="184" class="reliquary-art">╔══════════════════════════════════════╗
+║           ┌──────────────┐           ║
+║           │   ⟁ DW4W ⟁   │           ║
+║           │  MAKER'S SEAL │           ║
+║           └──────────────┘           ║
+║  ┌────────────────────────────────┐  ║
+║  │   TWELVEFOLD BRASS CORE       │  ║
+║  │   ════════════════════        │  ║
+║  │   ◈ Differential Engine ◈     │  ║
+║  │   ◈ 12-Gear Logic Array ◈    │  ║
+║  └────────────────────────────────┘  ║
+║  ┌───────────┐  ┌────────────────┐   ║
+║  │ 24 INK    │  │ VELLUM BANDS   │   ║
+║  │ WELLS     │  │ ═══════════    │   ║
+║  │ ◉◉◉◉◉◉   │  │ Unified Memory │   ║
+║  │ ◉◉◉◉◉◉   │  │ 24 Registers   │   ║
+║  │ ◉◉◉◉◉◉   │  │ ∞ Persistence  │   ║
+║  │ ◉◉◉◉◉◉   │  │                │   ║
+║  └───────────┘  └────────────────┘   ║
+║  ┌────────────────────────────────┐  ║
+║  │   CODEX TAHOE · Rev. 26.5.2   │  ║
+║  │   ─────────────────────────   │  ║
+║  │   Status: INSCRIBING          │  ║
+║  │   Signal: ✶ NOMINAL ✶         │  ║
+║  └────────────────────────────────┘  ║
+║  ┌────────────────────────────────┐  ║
+║  │   ⚙ CRANK  ◆ WEIGHTS  ☽ OIL  │  ║
+║  │   Power: SUSTAINED            │  ║
+║  └────────────────────────────────┘  ║
+║           DAEDALUS WORKS             ║
+║         FOURTH WORKSHOP              ║
+║       FLORENCE · c. 1490             ║
+╚══════════════════════════════════════╝</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MISSION BRIEF — "THE SIGNAL"               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="185" id="signal-section-sig1" class="relative py-20 md:py-28 px-4 md:px-8 max-w-7xl mx-auto fade-in-section">
+      <div data-id="186" class="section-number">02</div>
+      <div data-id="187" class="mb-12 md:mb-16">
+        <p data-id="188" class="text-gold-dim text-xs tracking-[0.3em] uppercase font-mono mb-2">Section 02</p>
+        <h2 data-id="189" class="font-display text-gold text-3xl md:text-5xl tracking-wide">The Signal</h2>
+      </div>
+
+      <div data-id="190" class="rounded-lg p-6 md:p-10 border-l-4 border-gold-dim" style="background: linear-gradient(135deg, #0f0c08, #080603);">
+        <h3 data-id="191" class="font-display text-gold text-2xl md:text-3xl mb-4">Built to Endure</h3>
+        <p data-id="192" class="text-text/85 text-sm md:text-base leading-relaxed max-w-3xl mb-10">The Phoenix Network is not a cloud. It is not a service. It is an architecture — a private, deliberately constructed system of machines, roles, and intentions. Each node is named. Each node has a purpose. The fire below is discipline. The flight above is capability. Together, they form a signal that doesn't go dark.</p>
+
+        <div data-id="193" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div data-id="194" class="flex items-start gap-4">
+            <span data-id="195" class="text-gold text-2xl mt-0.5 flex-shrink-0">⟁</span>
+            <div data-id="196">
+              <h4 data-id="197" class="text-gold text-sm font-semibold tracking-[0.15em] uppercase mb-1">Hardware Sovereignty</h4>
+              <p data-id="198" class="text-muted text-xs leading-relaxed">Own the machine. Own the stack.</p>
+            </div>
+          </div>
+          <div data-id="199" class="flex items-start gap-4">
+            <span data-id="200" class="text-gold text-2xl mt-0.5 flex-shrink-0">◈</span>
+            <div data-id="201">
+              <h4 data-id="202" class="text-gold text-sm font-semibold tracking-[0.15em] uppercase mb-1">Disciplined Architecture</h4>
+              <p data-id="203" class="text-muted text-xs leading-relaxed">Every node has a name, a role, and a reason.</p>
+            </div>
+          </div>
+          <div data-id="204" class="flex items-start gap-4">
+            <span data-id="205" class="text-gold text-2xl mt-0.5 flex-shrink-0">✶</span>
+            <div data-id="206">
+              <h4 data-id="207" class="text-gold text-sm font-semibold tracking-[0.15em] uppercase mb-1">Enduring Signal</h4>
+              <p data-id="208" class="text-muted text-xs leading-relaxed">Systems built to rise, survive, and evolve.</p>
+            </div>
+          </div>
+        </div>
+
+        <div data-id="209" class="mt-10">
+          <a data-id="210" href="mission.html" class="btn-ghost inline-block">Read Full Mission</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- INFRASTRUCTURE OVERVIEW                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section data-id="211" id="infra-section-inf1" class="relative py-20 md:py-28 px-4 md:px-8 max-w-7xl mx-auto fade-in-section">
+      <div data-id="212" class="section-number">03</div>
+      <div data-id="213" class="mb-12 md:mb-16">
+        <p data-id="214" class="text-gold-dim text-xs tracking-[0.3em] uppercase font-mono mb-2">Section 03</p>
+        <h2 data-id="215" class="font-display text-gold text-3xl md:text-5xl tracking-wide">Infrastructure</h2>
+      </div>
+
+      <div data-id="216" class="rounded-lg overflow-hidden border border-gold-dim/20" style="background: linear-gradient(180deg, #0d0a06, #080603);">
+        <!-- Table header -->
+        <div data-id="217" class="grid grid-cols-3 gap-4 px-4 md:px-8 py-3 border-b border-gold-dim/20" style="background: rgba(244,199,106,0.03);">
+          <span data-id="218" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase">Device</span>
+          <span data-id="219" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase">Model</span>
+          <span data-id="220" class="font-mono text-gold-dim text-[0.6rem] tracking-[0.2em] uppercase hidden sm:block">Details</span>
+        </div>
+
+        <div data-id="221" class="infra-row grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="222" class="text-gold text-sm font-display">PhoenixCore</span>
+          <span data-id="223" class="text-text text-xs font-mono">RT-AX86U Pro</span>
+          <span data-id="224" class="text-muted text-xs hidden sm:block">Gateway · Asuswrt-Merlin</span>
+        </div>
+        <div data-id="225" class="infra-row grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="226" class="text-gold text-sm font-display">PhoenixAscend</span>
+          <span data-id="227" class="text-text text-xs font-mono">RT-AX86U Pro</span>
+          <span data-id="228" class="text-muted text-xs hidden sm:block">Wireless Uplink Bridge · Asuswrt-Merlin</span>
+        </div>
+        <div data-id="229" class="infra-row grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="230" class="text-gold text-sm font-display">Compute Backbone</span>
+          <span data-id="231" class="text-text text-xs font-mono">TP-Link TL-SG116</span>
+          <span data-id="232" class="text-muted text-xs hidden sm:block">16-Port Unmanaged Gigabit</span>
+        </div>
+        <div data-id="233" class="infra-row grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="234" class="text-gold text-sm font-display">Parlor Uplink</span>
+          <span data-id="235" class="text-text text-xs font-mono">TP-Link TL-SG108</span>
+          <span data-id="236" class="text-muted text-xs hidden sm:block">8-Port Unmanaged Gigabit</span>
+        </div>
+        <div data-id="237" class="infra-row grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="238" class="text-gold text-sm font-display">NAS SHUTTLE</span>
+          <span data-id="239" class="text-text text-xs font-mono">1TB USB NVMe</span>
+          <span data-id="240" class="text-muted text-xs hidden sm:block">Samba via PhoenixCore</span>
+        </div>
+        <div data-id="241" class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 px-4 md:px-8 py-4">
+          <span data-id="242" class="text-gold text-sm font-display">NAS WDSSD500GB</span>
+          <span data-id="243" class="text-text text-xs font-mono">500GB WD SSD</span>
+          <span data-id="244" class="text-muted text-xs hidden sm:block">Samba via PhoenixCore</span>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="site-footer">
-    <span>© <span id="year"></span> Phoenix Network</span>
-    <span class="footer-motto">FIRE BELOW • FLIGHT ABOVE</span>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FOOTER                                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer data-id="245" id="footer-section-ftr1" class="border-t border-gold-dim/30" style="background: #060503;">
+    <div data-id="246" class="max-w-7xl mx-auto px-4 md:px-8 py-10 md:py-14">
+      <div data-id="247" class="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
+        <!-- Left -->
+        <div data-id="248" class="flex items-center gap-3 text-center md:text-left">
+          <svg data-id="249" width="24" height="28" viewBox="0 0 32 36" fill="none">
+            <path data-id="250" d="M16 2 L6 18 L16 14 L26 18 Z" fill="#F4C76A" opacity="0.9"/>
+            <path data-id="251" d="M16 14 L6 18 L10 30 L16 24 L22 30 L26 18 Z" fill="#c49b3f" opacity="0.8"/>
+            <path data-id="252" d="M12 28 L16 34 L20 28 L16 24 Z" fill="#8a6a2a" opacity="0.7"/>
+          </svg>
+          <div data-id="253">
+            <p data-id="254" class="text-gold text-sm tracking-[0.15em] font-display">PHOENIX NETWORK</p>
+            <p data-id="255" class="text-gold-dim text-[0.6rem] tracking-[0.15em] font-mono">PHOENIXNETWORK.INFO</p>
+          </div>
+        </div>
+        <!-- Center -->
+        <nav data-id="256" class="flex flex-wrap justify-center gap-4 md:gap-6">
+          <a data-id="257" href="index.html" class="text-muted text-xs tracking-wider uppercase hover:text-gold transition-colors">Home</a>
+          <a data-id="258" href="mission.html" class="text-muted text-xs tracking-wider uppercase hover:text-gold transition-colors">Mission</a>
+          <a data-id="259" href="nodes.html" class="text-muted text-xs tracking-wider uppercase hover:text-gold transition-colors">Nodes</a>
+          <a data-id="260" href="projects.html" class="text-muted text-xs tracking-wider uppercase hover:text-gold transition-colors">Projects</a>
+          <a data-id="261" href="DW4W.html" class="text-muted text-xs tracking-wider uppercase hover:text-gold transition-colors">Codex</a>
+        </nav>
+        <!-- Right -->
+        <p data-id="262" class="text-gold-dim text-[0.65rem] tracking-wider text-center md:text-right">© 2026 Phoenix Network<br data-id="263">All Rights Reserved</p>
+      </div>
+    </div>
+    <div data-id="264" class="border-t border-gold-dim/15 py-4 text-center">
+      <p data-id="265" class="text-gold-dim/40 text-[0.55rem] tracking-[0.4em] uppercase">Fire Below · Flight Above</p>
+      <p data-id="266" class="text-gold-dim/25 text-[0.5rem] tracking-wider mt-2">Made by Copilot</p>
+    </div>
   </footer>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // ═══════════════════════════════════════
+    // Icons — progressive enhancement
+    // ═══════════════════════════════════════
+    if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+      lucide.createIcons();
+    }
+
+    // ═══════════════════════════════════════
+    // Mobile menu toggle
+    // ═══════════════════════════════════════
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn-btn1');
+    const mobileMenuClose = document.getElementById('mobile-menu-close-btn2');
+    const mobileMenu = document.getElementById('mobile-menu-nav2');
+
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', function() {
+        mobileMenu.classList.remove('hidden');
+        mobileMenu.classList.add('flex');
+      });
+    }
+    if (mobileMenuClose && mobileMenu) {
+      mobileMenuClose.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('flex');
+      });
+    }
+    // Close mobile menu when clicking a link
+    mobileMenu.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('flex');
+      });
+    });
+
+    // ═══════════════════════════════════════
+    // Ember particle canvas
+    // ═══════════════════════════════════════
+    (function() {
+      const canvas = document.getElementById('ember-canvas-cnvs');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let w, h;
+
+      function resize() {
+        const hero = canvas.parentElement;
+        w = canvas.width = hero.offsetWidth;
+        h = canvas.height = hero.offsetHeight;
+      }
+
+      function createParticle() {
+        return {
+          x: Math.random() * w,
+          y: h + Math.random() * 40,
+          size: Math.random() * 2.5 + 0.5,
+          speedY: Math.random() * 0.6 + 0.15,
+          speedX: (Math.random() - 0.5) * 0.3,
+          opacity: Math.random() * 0.6 + 0.2,
+          hue: Math.random() > 0.5 ? '244,199,106' : '196,155,63',
+          life: 0,
+          maxLife: Math.random() * 400 + 200,
+        };
+      }
+
+      function init() {
+        resize();
+        particles = [];
+        for (let i = 0; i < 80; i++) {
+          const p = createParticle();
+          p.y = Math.random() * h;
+          p.life = Math.random() * p.maxLife;
+          particles.push(p);
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.y -= p.speedY;
+          p.x += p.speedX + Math.sin(p.life * 0.01) * 0.15;
+          p.life++;
+
+          const lifeRatio = p.life / p.maxLife;
+          let alpha = p.opacity;
+          if (lifeRatio > 0.7) {
+            alpha *= 1 - ((lifeRatio - 0.7) / 0.3);
+          }
+          if (lifeRatio < 0.1) {
+            alpha *= lifeRatio / 0.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + p.hue + ',' + alpha + ')';
+          ctx.fill();
+
+          // Glow
+          if (p.size > 1.5) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + p.hue + ',' + (alpha * 0.08) + ')';
+            ctx.fill();
+          }
+
+          if (p.life >= p.maxLife || p.y < -20) {
+            particles[i] = createParticle();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      init();
+      animate();
+
+      window.addEventListener('resize', function() {
+        resize();
+      });
+    })();
+
+    // ═══════════════════════════════════════
+    // Scroll fade-in (IntersectionObserver)
+    // ═══════════════════════════════════════
+    (function() {
+      const sections = document.querySelectorAll('.fade-in-section');
+      if (!sections.length) return;
+
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -60px 0px'
+      });
+
+      sections.forEach(function(s) {
+        observer.observe(s);
+      });
+    })();
+
+    // ═══════════════════════════════════════
+    // Header background on scroll
+    // ═══════════════════════════════════════
+    (function() {
+      const header = document.getElementById('site-header-hdr0');
+      if (!header) return;
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 80) {
+          header.style.background = 'rgba(5,3,2,0.95)';
+        } else {
+          header.style.background = 'rgba(5,3,2,0.85)';
+        }
+      });
+    })();
   </script>
 </body>
 </html>
