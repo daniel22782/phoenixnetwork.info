@@ -4,20 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teet Teet Nation – Liberty Municipal Park Chronicles</title>
+
   <style>
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #fafafa;
       color: #222;
       text-align: center;
+      background: linear-gradient(180deg, #ffefcc 0%, #ffe0b3 40%, #fafafa 100%);
+      background-size: 100% 300%;
+      animation: sunrise 12s ease-in-out infinite alternate;
     }
+
+    @keyframes sunrise {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+
     header {
       background: linear-gradient(to bottom, #003366, #990000);
       color: white;
       padding: 1.5em 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
+
     img.flag {
       width: 90%;
       max-width: 600px;
@@ -27,24 +38,83 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+
     section {
       max-width: 800px;
       margin: auto;
       padding: 0 1.5em 2em;
       line-height: 1.6;
     }
+
     h1, h2 {
       font-weight: 600;
     }
+
+    /* Peanut Hover Tooltip */
+    .peanut {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #f7d7a8;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .peanut:hover {
+      background: #f3c98b;
+    }
+    .tooltip {
+      display: none;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+      color: #444;
+    }
+    .peanut:hover + .tooltip {
+      display: block;
+    }
+
+    /* Collapsible Lore Panel */
+    details {
+      margin-top: 2em;
+      background: #fff;
+      padding: 1em;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 0.5em;
+    }
+
+    /* Anthem Button */
+    .anthem-btn {
+      background: #003366;
+      color: #fff;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 1.5em 0;
+      transition: 0.2s;
+    }
+    .anthem-btn:hover {
+      background: #004080;
+    }
+
     footer {
       background: #003366;
       color: #fff;
       padding: 1em 0;
       font-size: 0.9em;
+      margin-top: 2em;
     }
   </style>
 </head>
+
 <body>
+
   <header>
     <h1>Welcome to the Teet Teet Nation</h1>
     <p>Born beneath the fireworks of Liberty Municipal Park</p>
@@ -52,31 +122,5 @@
 
   <img src="TeetTeet_Nation_Flag_Independence2026.png" alt="Teet Teet Nation Flag" class="flag">
 
-  <section>
-    <h2>The Story</h2>
-    <p>
-      From the back door of a small apartment overlooking Liberty Municipal Park, two generations of Carolina wrens—
-      affectionately known as the Teet Teets—declared their independence. Each July 4th, as fireworks shimmer above the trees,
-      they perform their sacred Peanut Patriotic Ascension, hopping proudly before their human allies and claiming the backyard
-      as sovereign territory.
-    </p>
-
-    <h2>The Symbol</h2>
-    <p>
-      The flag above represents their unity: two wrens facing the rising sun, peanuts at the center of their alliance,
-      and a phoenix soaring overhead to mark their connection to the greater Phoenix Network. The red, white, and blue
-      ribbons honor the chaos and humor of the American spirit—especially when Michael Berry talks over “Glory Glory Hallelujah.”
-    </p>
-
-    <h2>The Tradition</h2>
-    <p>
-      Each year, the Teet Teets reconvene at dusk, chirping their anthem as Liberty’s fireworks ignite. Their song reminds us
-      that even the smallest wings can carry the weight of celebration, comedy, and freedom.
-    </p>
-  </section>
-
-  <footer>
-    © 2026 PhoenixPlay | Teet Teet Nation – Liberty, Texas
-  </footer>
-</body>
-</html>
+  <!-- Anthem Button -->
+  <button class="anthem-btn" onclick="playAnthem()">Play Teet Teet National
