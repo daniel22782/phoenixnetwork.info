@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<title>PN-PHL313K Logic Reference</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg: { DEFAULT: '#0f1117', card: '#1a1f2e', inset: '#0d1117', hover: '#232940' },
+        gold: { DEFAULT: '#c9a84c', dim: '#a08530', light: '#e4cc7a' },
+        teal: { DEFAULT: '#4db6ac', dim: '#357f76', light: '#80cbc4' },
+        txt: { DEFAULT: '#e8e6e0', muted: '#9a9a9a', dim: '#6b7280' },
+        border: { DEFAULT: '#2a2f40', gold: '#c9a84c' },
+        tval: { t: '#1e3a2f', f: '#3a1e1e' },
+        warn: '#e74c3c',
+      },
+      fontFamily: {
+        mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      }
+    }
+  }
+};
+</script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #0f1117; --card: #1a1f2e; --inset: #0d1117;
+  --gold: #c9a84c; --gold-dim: #a08530; --gold-light: #e4cc7a;
+  --teal: #4db6ac; --teal-dim: #357f76;
+  --txt: #e8e6e0; --txt-muted: #9a9a9a;
+  --border: #2a2f40; --border-gold: #c9a84c;
+  --t-bg: #1e3a2f; --f-bg: #3a1e1e;
+  --warn: #e74c3c;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--txt); margin: 0; line-height: 1.6; }
+.font-mono, code, .formula, .proof-box pre, .truth-table { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+/* Sidebar */
+#sidebar-w0a1 {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: #12151f;
+  border-right: 1px solid var(--border); z-index: 40; display: flex; flex-direction: column;
+  transition: transform 0.3s ease;
+}
+#sidebar-w0a1.collapsed { transform: translateX(-260px); }
+#main-w0a2 { margin-left: 260px; min-height: 100vh; transition: margin-left 0.3s ease; }
+#main-w0a2.expanded { margin-left: 0; }
+@media (max-width: 767px) {
+  #sidebar-w0a1 { transform: translateX(-260px); }
+  #sidebar-w0a1.open { transform: translateX(0); }
+  #main-w0a2 { margin-left: 0 !important; }
+}
+
+/* View transitions */
+.view-panel { display: none; opacity: 0; transition: opacity 0.35s ease; }
+.view-panel.active { display: block; opacity: 1; }
+
+/* Cards */
+.content-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.proof-box {
+  background: var(--inset); border-left: 3px solid var(--gold); border-radius: 6px;
+  padding: 1.25rem; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7;
+}
+.proof-box pre { margin: 0; white-space: pre-wrap; color: var(--txt); }
+
+/* Truth tables */
+.truth-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.truth-table th { background: #161b28; padding: 8px 12px; text-align: center; border: 1px solid var(--border); color: var(--gold); font-weight: 600; }
+.truth-table td { padding: 8px 12px; text-align: center; border: 1px solid var(--border); }
+.truth-table td.tv-t { background: var(--t-bg); color: #6ee7b7; font-weight: 600; }
+.truth-table td.tv-f { background: var(--f-bg); color: #fca5a5; font-weight: 600; }
+
+/* Styled tables */
+.ref-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.ref-table th { background: #161b28; padding: 10px 14px; text-align: left; border: 1px solid var(--border); color: var(--gold); font-weight: 600; }
+.ref-table td { padding: 10px 14px; text-align: left; border: 1px solid var(--border); }
+.ref-table tr:hover { background: rgba(77,182,172,0.06); }
+
+/* Note boxes */
+.note-box { border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+.note-gold { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); }
+.note-red { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); }
+.note-teal { background: rgba(77,182,172,0.1); border: 1px solid rgba(77,182,172,0.3); }
+
+/* Mythic analogy */
+.mythic { color: var(--gold-dim); font-style: italic; padding-left: 1.25rem; border-left: 2px solid rgba(201,168,76,0.25); margin: 0.75rem 0; font-size: 0.9rem; }
+.mythic::before { content: '⚡ '; }
+
+/* Sidebar nav items */
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer;
+  border-radius: 6px; margin: 2px 8px; transition: all 0.2s; color: var(--txt-muted); font-size: 0.9rem;
+}
+.nav-item:hover { background: rgba(201,168,76,0.1); color: var(--txt); }
+.nav-item.active { background: rgba(201,168,76,0.15); color: var(--gold); font-weight: 600; }
+
+/* Gold pill badge */
+.badge-gold {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #0f1117;
+  font-weight: 700; font-size: 0.75rem; padding: 2px 10px; border-radius: 999px; min-width: 28px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+/* Module cards on index */
+.module-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.5rem; cursor: pointer; transition: all 0.25s;
+}
+.module-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+/* Code block */
+.code-block {
+  background: var(--inset); border: 1px solid var(--border); border-radius: 6px;
+  padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; overflow-x: auto; line-height: 1.6;
+}
+
+/* Operator card */
+.op-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; }
+
+/* Search highlight */
+.search-highlight { background: rgba(201,168,76,0.3); border-radius: 2px; }
+
+/* Mobile menu overlay */
+#sidebar-overlay-k3m2 {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 35;
+}
+
+/* Progress bar for fuzzy membership */
+.fuzzy-bar { height: 18px; border-radius: 4px; transition: width 0.3s ease; }
+
+/* Interactive calc styling */
+.calc-input {
+  background: var(--inset); border: 1px solid var(--border); color: var(--txt); padding: 8px 12px;
+  border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; width: 100%;
+}
+.calc-input:focus { outline: none; border-color: var(--gold); }
+
+/* Decision tree */
+.dt-node { background: var(--inset); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; position: relative; }
+.dt-node.dt-answer { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+/* Gradient bar */
+.gradient-truth {
+  height: 32px; border-radius: 6px;
+  background: linear-gradient(to right, #e74c3c, #e67e22, #f1c40f, #2ecc71, #27ae60);
+}
+
+/* Featured section */
+.featured { border: 1px solid var(--gold); border-left: 4px solid var(--gold); background: rgba(201,168,76,0.04); }
+
+/* Number line */
+.number-line { position: relative; height: 60px; margin: 2rem 0; }
+.number-line-bar { position: absolute; top: 28px; left: 5%; right: 5%; height: 3px; background: linear-gradient(to right, #e74c3c, #4db6ac, #27ae60); border-radius: 2px; }
+.nl-point { position: absolute; top: 16px; transform: translateX(-50%); text-align: center; font-size: 0.75rem; }
+.nl-dot { width: 12px; height: 12px; border-radius: 50%; margin: 0 auto 4px; }
+</style>
+</head>
+<body data-id="0" class="bg-bg text-txt font-sans">
+<app-icon data-id="1" hidden data-icon="book-open" data-palette="Yellow"></app-icon>
+
+<!-- Mobile top bar -->
+<div data-id="2" id="mobile-bar-r4s2" class="md:hidden fixed top-0 left-0 right-0 z-30 bg-bg/95 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
+  <button data-id="3" id="mobile-menu-btn-q8w1" class="p-2 rounded-lg hover:bg-bg-hover">
+    <i data-id="4" data-lucide="menu" class="w-6 h-6 text-gold"></i>
+  </button>
+  <span data-id="5" class="font-mono text-gold font-semibold text-sm">PN · PHL313K</span>
+</div>
+
+<!-- Sidebar overlay for mobile -->
+<div data-id="6" id="sidebar-overlay-k3m2"></div>
+
+<!-- Sidebar -->
+<aside data-id="7" id="sidebar-w0a1">
+  <div data-id="8" class="p-5 border-b border-border">
+    <div data-id="9" class="font-mono text-gold font-bold text-lg tracking-wider">PN · PHL313K</div>
+    <div data-id="10" class="text-txt-dim text-xs mt-1">Phoenix Network Logic Suite</div>
+  </div>
+  <div data-id="11" class="p-3">
+    <div data-id="12" class="relative">
+      <i data-id="13" data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-txt-dim"></i>
+      <input data-id="14" id="sidebar-search-x2p4" type="text" placeholder="Search all modules…" class="w-full bg-bg border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-txt placeholder:text-txt-dim focus:outline-none focus:border-gold" />
+    </div>
+  </div>
+  <nav data-id="15" class="flex-1 overflow-y-auto py-2" id="nav-list-j7k3">
+    <div data-id="16" class="nav-item active" data-view="view-0">
+      <i data-id="17" data-lucide="layout-grid" class="w-4 h-4"></i>
+      <span data-id="18">Master Index</span>
+    </div>
+    <div data-id="19" class="nav-item" data-view="view-1">
+      <i data-id="20" data-lucide="toggle-left" class="w-4 h-4"></i>
+      <span data-id="21">1 · Sentential Logic</span>
+    </div>
+    <div data-id="22" class="nav-item" data-view="view-2">
+      <i data-id="23" data-lucide="scan" class="w-4 h-4"></i>
+      <span data-id="24">2 · Predicate & Sets</span>
+    </div>
+    <div data-id="25" class="nav-item" data-view="view-3">
+      <i data-id="26" data-lucide="git-merge" class="w-4 h-4"></i>
+      <span data-id="27">3 · Inference Rules</span>
+    </div>
+    <div data-id="28" class="nav-item" data-view="view-4">
+      <i data-id="29" data-lucide="file-code-2" class="w-4 h-4"></i>
+      <span data-id="30">4 · Proof Templates</span>
+    </div>
+    <div data-id="31" class="nav-item" data-view="view-5">
+      <i data-id="32" data-lucide="waves" class="w-4 h-4"></i>
+      <span data-id="33">5 · Fuzzy & Probabilistic</span>
+    </div>
+  </nav>
+  <div data-id="34" class="p-4 border-t border-border text-xs text-txt-dim">
+    Revision 1.1 · Sept 2026
+  </div>
+</aside>
+
+<!-- Main Content -->
+<div data-id="35" id="main-w0a2">
+  <div data-id="36" class="pt-16 md:pt-0">
+
+<!-- ==================== VIEW 0: MASTER INDEX ==================== -->
+<div data-id="37" class="view-panel active" id="view-0">
+  <div data-id="38" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="39" class="mb-10">
+      <h1 data-id="40" id="title-h1-a3b4" class="text-2xl md:text-4xl font-bold text-gold mb-2">PN-PHL313K Logic Reference</h1>
+      <p data-id="41" id="subtitle-p0c5" class="text-teal text-base md:text-lg font-medium">Phoenix Network · Complete Course Reference Suite</p>
+      <p data-id="42" id="tagline-p1d6" class="text-txt-muted text-sm mt-2 max-w-2xl">Five modules covering sentential logic through fuzzy reasoning — with mythic analogies throughout.</p>
+    </header>
+
+    <!-- Module Cards Grid -->
+    <div data-id="43" id="module-grid-e7f8" class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+      <div data-id="44" class="module-card" data-nav="view-1">
+        <span data-id="45" class="badge-gold mb-3 inline-block">Module 1</span>
+        <h3 data-id="46" class="text-lg font-semibold text-txt mt-2 flex items-center gap-2"><i data-id="47" data-lucide="toggle-left" class="w-5 h-5 text-teal"></i> Sentential Logic</h3>
+        <p data-id="48" class="text-txt-muted text-sm mt-2 leading-relaxed">8 core operators, truth tables, equivalences, and operator precedence. The foundation of formal logic.</p>
+        <button data-id="49" class="mt-4 text-gold text-sm font-medium hover:text-gold-light transition module-open-btn" data-target="view-1">Open Module →</button>
+      </div>
+      <div data-id="50" class="module-card" data-nav="view-2">
+        <span data-id="51" class="badge-gold mb-3 inline-block">Module 2</span>
+        <h3 data-id="52" class="text-lg font-semibold text-txt mt-2 flex items-center gap-2"><i data-id="53" data-lucide="scan" class="w-5 h-5 text-teal"></i> Predicate Logic &amp; Set Theory</h3>
+        <p data-id="54" class="text-txt-muted text-sm mt-2 leading-relaxed">Quantifiers (∀, ∃), domains of discourse, set operators, and the ±∞ quantifier spectrum.</p>
+        <button data-id="55" class="mt-4 text-gold text-sm font-medium hover:text-gold-light transition module-open-btn" data-target="view-2">Open Module →</button>
+      </div>
+      <div data-id="56" class="module-card" data-nav="view-3">
+        <span data-id="57" class="badge-gold mb-3 inline-block">Module 3</span>
+        <h3 data-id="58" class="text-lg font-semibold text-txt mt-2 flex items-center gap-2"><i data-id="59" data-lucide="git-merge" class="w-5 h-5 text-teal"></i> Inference Rules</h3>
+        <p data-id="60" class="text-txt-muted text-sm mt-2 leading-relaxed">The 11 licensed moves of formal logic: MP, MT, HS, DS, CD, DD, Simp, Conj, Add, Abs, Res, plus all replacement rules.</p>
+        <button data-id="61" class="mt-4 text-gold text-sm font-medium hover:text-gold-light transition module-open-btn" data-target="view-3">Open Module →</button>
+      </div>
+    </div>
+    <div data-id="62" id="module-grid2-g9h0" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+      <div data-id="63" class="module-card" data-nav="view-4">
+        <span data-id="64" class="badge-gold mb-3 inline-block">Module 4</span>
+        <h3 data-id="65" class="text-lg font-semibold text-txt mt-2 flex items-center gap-2"><i data-id="66" data-lucide="file-code-2" class="w-5 h-5 text-teal"></i> Proof Templates</h3>
+        <p data-id="67" class="text-txt-muted text-sm mt-2 leading-relaxed">Four proof strategies with skeletons and worked examples: Direct, Contradiction, Contrapositive, Cases.</p>
+        <button data-id="68" class="mt-4 text-gold text-sm font-medium hover:text-gold-light transition module-open-btn" data-target="view-4">Open Module →</button>
+      </div>
+      <div data-id="69" class="module-card" data-nav="view-5">
+        <span data-id="70" class="badge-gold mb-3 inline-block">Module 5</span>
+        <h3 data-id="71" class="text-lg font-semibold text-txt mt-2 flex items-center gap-2"><i data-id="72" data-lucide="waves" class="w-5 h-5 text-teal"></i> Fuzzy &amp; Probabilistic Logic</h3>
+        <p data-id="73" class="text-txt-muted text-sm mt-2 leading-relaxed">Degrees of truth, membership functions, linguistic hedges, Bayes' Theorem, and probabilistic quantifiers.</p>
+        <button data-id="74" class="mt-4 text-gold text-sm font-medium hover:text-gold-light transition module-open-btn" data-target="view-5">Open Module →</button>
+      </div>
+    </div>
+
+    <!-- Quick Symbol Lookup -->
+    <section data-id="75" class="content-card" id="symbol-lookup-i1j2">
+      <h2 data-id="76" class="text-xl font-bold text-gold mb-1 flex items-center gap-2"><i data-id="77" data-lucide="search" class="w-5 h-5"></i> Quick Symbol Lookup</h2>
+      <p data-id="78" class="text-txt-muted text-sm mb-4">Search across every symbol in the course.</p>
+      <input data-id="79" id="symbol-search-k3l4" type="text" placeholder="Type a symbol or name…" class="calc-input mb-4" />
+      <div data-id="80" class="overflow-x-auto">
+        <table data-id="81" class="ref-table" id="symbol-table-m5n6">
+          <thead data-id="82"><tr data-id="83"><th data-id="84">Symbol</th><th data-id="85">Name</th><th data-id="86">Module</th><th data-id="87">Read As</th></tr></thead>
+          <tbody data-id="88">
+            <tr data-id="89"><td data-id="90" class="font-mono text-lg text-gold">¬</td><td data-id="91">NOT</td><td data-id="92">Sentential</td><td data-id="93">"It is not the case that"</td></tr>
+            <tr data-id="94"><td data-id="95" class="font-mono text-lg text-gold">∧</td><td data-id="96">AND</td><td data-id="97">Sentential</td><td data-id="98">"and"</td></tr>
+            <tr data-id="99"><td data-id="100" class="font-mono text-lg text-gold">∨</td><td data-id="101">OR</td><td data-id="102">Sentential</td><td data-id="103">"or"</td></tr>
+            <tr data-id="104"><td data-id="105" class="font-mono text-lg text-gold">→</td><td data-id="106">IMPLIES</td><td data-id="107">Sentential</td><td data-id="108">"if…then"</td></tr>
+            <tr data-id="109"><td data-id="110" class="font-mono text-lg text-gold">↔</td><td data-id="111">BICONDITIONAL</td><td data-id="112">Sentential</td><td data-id="113">"if and only if"</td></tr>
+            <tr data-id="114"><td data-id="115" class="font-mono text-lg text-gold">⊕</td><td data-id="116">XOR</td><td data-id="117">Sentential</td><td data-id="118">"either…or…but not both"</td></tr>
+            <tr data-id="119"><td data-id="120" class="font-mono text-lg text-gold">↑</td><td data-id="121">NAND</td><td data-id="122">Sentential</td><td data-id="123">"not both"</td></tr>
+            <tr data-id="124"><td data-id="125" class="font-mono text-lg text-gold">↓</td><td data-id="126">NOR</td><td data-id="127">Sentential</td><td data-id="128">"neither…nor"</td></tr>
+            <tr data-id="129"><td data-id="130" class="font-mono text-lg text-gold">∀</td><td data-id="131">Universal Quantifier</td><td data-id="132">Predicate</td><td data-id="133">"for all x"</td></tr>
+            <tr data-id="134"><td data-id="135" class="font-mono text-lg text-gold">∃</td><td data-id="136">Existential Quantifier</td><td data-id="137">Predicate</td><td data-id="138">"there exists an x"</td></tr>
+            <tr data-id="139"><td data-id="140" class="font-mono text-lg text-gold">∃!</td><td data-id="141">Unique Existential</td><td data-id="142">Predicate</td><td data-id="143">"there exists exactly one x"</td></tr>
+            <tr data-id="144"><td data-id="145" class="font-mono text-lg text-gold">∈</td><td data-id="146">Element-of</td><td data-id="147">Set Theory</td><td data-id="148">"x is in"</td></tr>
+            <tr data-id="149"><td data-id="150" class="font-mono text-lg text-gold">∉</td><td data-id="151">Not element-of</td><td data-id="152">Set Theory</td><td data-id="153">"x is not in"</td></tr>
+            <tr data-id="154"><td data-id="155" class="font-mono text-lg text-gold">∅</td><td data-id="156">Empty Set</td><td data-id="157">Set Theory</td><td data-id="158">"the empty set"</td></tr>
+            <tr data-id="159"><td data-id="160" class="font-mono text-lg text-gold">⊆</td><td data-id="161">Subset</td><td data-id="162">Set Theory</td><td data-id="163">"is a subset of"</td></tr>
+            <tr data-id="164"><td data-id="165" class="font-mono text-lg text-gold">⊂</td><td data-id="166">Proper Subset</td><td data-id="167">Set Theory</td><td data-id="168">"is a proper subset of"</td></tr>
+            <tr data-id="169"><td data-id="170" class="font-mono text-lg text-gold">∪</td><td data-id="171">Union</td><td data-id="172">Set Theory</td><td data-id="173">"union"</td></tr>
+            <tr data-id="174"><td data-id="175" class="font-mono text-lg text-gold">∩</td><td data-id="176">Intersection</td><td data-id="177">Set Theory</td><td data-id="178">"intersection"</td></tr>
+            <tr data-id="179"><td data-id="180" class="font-mono text-lg text-gold">\</td><td data-id="181">Set Difference</td><td data-id="182">Set Theory</td><td data-id="183">"minus"</td></tr>
+            <tr data-id="184"><td data-id="185" class="font-mono text-lg text-gold">×</td><td data-id="186">Cartesian Product</td><td data-id="187">Set Theory</td><td data-id="188">"all ordered pairs of"</td></tr>
+            <tr data-id="189"><td data-id="190" class="font-mono text-lg text-gold">𝒫</td><td data-id="191">Power Set</td><td data-id="192">Set Theory</td><td data-id="193">"all subsets of"</td></tr>
+            <tr data-id="194"><td data-id="195" class="font-mono text-lg text-gold">∎</td><td data-id="196">QED</td><td data-id="197">Proofs</td><td data-id="198">"end of proof"</td></tr>
+            <tr data-id="199"><td data-id="200" class="font-mono text-lg text-gold">∴</td><td data-id="201">Therefore</td><td data-id="202">Proofs</td><td data-id="203">"therefore"</td></tr>
+            <tr data-id="204"><td data-id="205" class="font-mono text-lg text-gold">∵</td><td data-id="206">Because</td><td data-id="207">Proofs</td><td data-id="208">"because / since"</td></tr>
+            <tr data-id="209"><td data-id="210" class="font-mono text-lg text-gold">≡</td><td data-id="211">Logical Equivalence</td><td data-id="212">All</td><td data-id="213">"is logically equivalent to"</td></tr>
+            <tr data-id="214"><td data-id="215" class="font-mono text-lg text-gold">μ</td><td data-id="216">Fuzzy Truth Value</td><td data-id="217">Fuzzy Logic</td><td data-id="218">"degree of membership"</td></tr>
+            <tr data-id="219"><td data-id="220" class="font-mono text-lg text-gold">P(A)</td><td data-id="221">Probability</td><td data-id="222">Probabilistic</td><td data-id="223">"probability of A"</td></tr>
+            <tr data-id="224"><td data-id="225" class="font-mono text-lg text-gold">P(A|B)</td><td data-id="226">Conditional Probability</td><td data-id="227">Probabilistic</td><td data-id="228">"probability of A given B"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <footer data-id="229" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1</footer>
+</div>
+
+<!-- ==================== VIEW 1: SENTENTIAL LOGIC ==================== -->
+<div data-id="230" class="view-panel" id="view-1">
+  <div data-id="231" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="232" class="mb-8">
+      <span data-id="233" class="badge-gold mb-3 inline-block">Module 1</span>
+      <h1 data-id="234" id="m1-header-o7p8" class="text-2xl md:text-3xl font-bold text-gold">Sentential Logic</h1>
+      <p data-id="235" class="text-teal font-medium mt-1">The complete operator set for propositional logic</p>
+    </header>
+
+    <!-- What Is Sentential Logic? -->
+    <section data-id="236" class="content-card" id="m1-intro-q9r0">
+      <h2 data-id="237" class="text-lg font-semibold text-gold mb-3">What Is Sentential Logic?</h2>
+      <p data-id="238" class="text-txt leading-relaxed">Sentential logic (also called propositional logic) studies how statements — sentences that are either TRUE or FALSE — combine using logical operators to form compound statements. Variables like <span data-id="239" class="font-mono text-teal">P</span>, <span data-id="240" class="font-mono text-teal">Q</span>, and <span data-id="241" class="font-mono text-teal">R</span> stand in for any such statement.</p>
+    </section>
+
+    <!-- Core Notation Table -->
+    <section data-id="242" class="content-card" id="m1-notation-s1t2">
+      <h2 data-id="243" class="text-lg font-semibold text-gold mb-3">Core Notation</h2>
+      <div data-id="244" class="overflow-x-auto">
+        <table data-id="245" class="ref-table">
+          <thead data-id="246"><tr data-id="247"><th data-id="248">Symbol</th><th data-id="249">Name</th><th data-id="250">Read As</th></tr></thead>
+          <tbody data-id="251">
+            <tr data-id="252"><td data-id="253" class="font-mono text-lg text-gold">¬</td><td data-id="254">NOT</td><td data-id="255">It is not the case that…</td></tr>
+            <tr data-id="256"><td data-id="257" class="font-mono text-lg text-gold">∧</td><td data-id="258">AND</td><td data-id="259">…and…</td></tr>
+            <tr data-id="260"><td data-id="261" class="font-mono text-lg text-gold">∨</td><td data-id="262">OR</td><td data-id="263">…or…</td></tr>
+            <tr data-id="264"><td data-id="265" class="font-mono text-lg text-gold">→</td><td data-id="266">IMPLIES</td><td data-id="267">If…then…</td></tr>
+            <tr data-id="268"><td data-id="269" class="font-mono text-lg text-gold">↔</td><td data-id="270">BICONDITIONAL</td><td data-id="271">…if and only if…</td></tr>
+            <tr data-id="272"><td data-id="273" class="font-mono text-lg text-gold">⊕</td><td data-id="274">XOR</td><td data-id="275">Either…or…but not both</td></tr>
+            <tr data-id="276"><td data-id="277" class="font-mono text-lg text-gold">↑</td><td data-id="278">NAND</td><td data-id="279">Not both</td></tr>
+            <tr data-id="280"><td data-id="281" class="font-mono text-lg text-gold">↓</td><td data-id="282">NOR</td><td data-id="283">Neither…nor</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Operator 1: NOT -->
+    <div data-id="284" class="op-card" id="m1-op-not-u3v4">
+      <div data-id="285" class="flex items-center gap-3 mb-3"><span data-id="286" class="badge-gold">1</span><h3 data-id="287" class="text-lg font-bold">NOT — Negation <span data-id="288" class="font-mono text-teal">¬P</span></h3></div>
+      <p data-id="289" class="mb-3">Flips the truth value. If P is TRUE, ¬P is FALSE, and vice versa.</p>
+      <div data-id="290" class="overflow-x-auto mb-3">
+        <table data-id="291" class="truth-table" style="max-width:200px"><thead data-id="292"><tr data-id="293"><th data-id="294">P</th><th data-id="295">¬P</th></tr></thead><tbody data-id="296">
+          <tr data-id="297"><td data-id="298" class="tv-t">T</td><td data-id="299" class="tv-f">F</td></tr>
+          <tr data-id="300"><td data-id="301" class="tv-f">F</td><td data-id="302" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="303" class="code-block mb-3"><strong data-id="304">Example:</strong> P = "It is raining." → ¬P = "It is not raining."</div>
+      <div data-id="305" class="mythic">The trickster god who inverts every decree — whatever the king ordains, the trickster makes it the opposite.</div>
+    </div>
+
+    <!-- Operator 2: AND -->
+    <div data-id="306" class="op-card" id="m1-op-and-w5x6">
+      <div data-id="307" class="flex items-center gap-3 mb-3"><span data-id="308" class="badge-gold">2</span><h3 data-id="309" class="text-lg font-bold">AND — Conjunction <span data-id="310" class="font-mono text-teal">P ∧ Q</span></h3></div>
+      <p data-id="311" class="mb-3">TRUE only when both P and Q are TRUE.</p>
+      <div data-id="312" class="overflow-x-auto mb-3">
+        <table data-id="313" class="truth-table" style="max-width:280px"><thead data-id="314"><tr data-id="315"><th data-id="316">P</th><th data-id="317">Q</th><th data-id="318">P ∧ Q</th></tr></thead><tbody data-id="319">
+          <tr data-id="320"><td data-id="321" class="tv-t">T</td><td data-id="322" class="tv-t">T</td><td data-id="323" class="tv-t">T</td></tr>
+          <tr data-id="324"><td data-id="325" class="tv-t">T</td><td data-id="326" class="tv-f">F</td><td data-id="327" class="tv-f">F</td></tr>
+          <tr data-id="328"><td data-id="329" class="tv-f">F</td><td data-id="330" class="tv-t">T</td><td data-id="331" class="tv-f">F</td></tr>
+          <tr data-id="332"><td data-id="333" class="tv-f">F</td><td data-id="334" class="tv-f">F</td><td data-id="335" class="tv-f">F</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="336" class="code-block mb-3"><strong data-id="337">Example:</strong> P = "The forge is lit." Q = "The ore is ready."<br data-id="338"/>P ∧ Q = "The forge is lit and the ore is ready." (Both must hold for smithing to begin.)</div>
+      <div data-id="339" class="mythic">Two keys required to open the vault — both must turn simultaneously.</div>
+    </div>
+
+    <!-- Operator 3: OR -->
+    <div data-id="340" class="op-card" id="m1-op-or-y7z8">
+      <div data-id="341" class="flex items-center gap-3 mb-3"><span data-id="342" class="badge-gold">3</span><h3 data-id="343" class="text-lg font-bold">OR — Disjunction <span data-id="344" class="font-mono text-teal">P ∨ Q</span></h3></div>
+      <p data-id="345" class="mb-3">TRUE when at least one of P or Q is TRUE (inclusive).</p>
+      <div data-id="346" class="overflow-x-auto mb-3">
+        <table data-id="347" class="truth-table" style="max-width:280px"><thead data-id="348"><tr data-id="349"><th data-id="350">P</th><th data-id="351">Q</th><th data-id="352">P ∨ Q</th></tr></thead><tbody data-id="353">
+          <tr data-id="354"><td data-id="355" class="tv-t">T</td><td data-id="356" class="tv-t">T</td><td data-id="357" class="tv-t">T</td></tr>
+          <tr data-id="358"><td data-id="359" class="tv-t">T</td><td data-id="360" class="tv-f">F</td><td data-id="361" class="tv-t">T</td></tr>
+          <tr data-id="362"><td data-id="363" class="tv-f">F</td><td data-id="364" class="tv-t">T</td><td data-id="365" class="tv-t">T</td></tr>
+          <tr data-id="366"><td data-id="367" class="tv-f">F</td><td data-id="368" class="tv-f">F</td><td data-id="369" class="tv-f">F</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="370" class="code-block mb-3"><strong data-id="371">Example:</strong> P = "The scout sends a signal." Q = "The drums sound."<br data-id="372"/>P ∨ Q = "Either the scout signals or the drums sound." (One is enough to alert the garrison.)</div>
+      <div data-id="373" class="mythic">A door that opens if either guard nods approval — or if both do.</div>
+    </div>
+
+    <!-- Operator 4: IMPLIES -->
+    <div data-id="374" class="op-card" id="m1-op-implies-a9b0">
+      <div data-id="375" class="flex items-center gap-3 mb-3"><span data-id="376" class="badge-gold">4</span><h3 data-id="377" class="text-lg font-bold">IMPLIES — Material Conditional <span data-id="378" class="font-mono text-teal">P → Q</span></h3></div>
+      <p data-id="379" class="mb-3">FALSE only when P is TRUE and Q is FALSE. A false premise makes the whole conditional vacuously true.</p>
+      <div data-id="380" class="overflow-x-auto mb-3">
+        <table data-id="381" class="truth-table" style="max-width:280px"><thead data-id="382"><tr data-id="383"><th data-id="384">P</th><th data-id="385">Q</th><th data-id="386">P → Q</th></tr></thead><tbody data-id="387">
+          <tr data-id="388"><td data-id="389" class="tv-t">T</td><td data-id="390" class="tv-t">T</td><td data-id="391" class="tv-t">T</td></tr>
+          <tr data-id="392"><td data-id="393" class="tv-t">T</td><td data-id="394" class="tv-f">F</td><td data-id="395" class="tv-f">F</td></tr>
+          <tr data-id="396"><td data-id="397" class="tv-f">F</td><td data-id="398" class="tv-t">T</td><td data-id="399" class="tv-t">T</td></tr>
+          <tr data-id="400"><td data-id="401" class="tv-f">F</td><td data-id="402" class="tv-f">F</td><td data-id="403" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="404" class="code-block mb-3"><strong data-id="405">Example:</strong> P = "The relic is touched." Q = "The curse is triggered."<br data-id="406"/>If no one touches it, the curse clause is never violated.</div>
+      <div data-id="407" class="mythic">A prophecy: "If the chosen one speaks the word, the gate shall open." Only broken if the word is spoken and the gate stays shut.</div>
+      <div data-id="408" class="note-box note-red mt-3"><strong data-id="409">⚠ Watch out:</strong> Affirming the consequent (Q, P→Q ∴ P) is <strong data-id="410">INVALID</strong>. Denying the antecedent (¬P, P→Q ∴ ¬Q) is <strong data-id="411">INVALID</strong>.</div>
+    </div>
+
+    <!-- Operator 5: BICONDITIONAL -->
+    <div data-id="412" class="op-card" id="m1-op-bicon-c1d2">
+      <div data-id="413" class="flex items-center gap-3 mb-3"><span data-id="414" class="badge-gold">5</span><h3 data-id="415" class="text-lg font-bold">BICONDITIONAL <span data-id="416" class="font-mono text-teal">P ↔ Q</span></h3></div>
+      <p data-id="417" class="mb-3">TRUE when P and Q have the same truth value (both TRUE or both FALSE). "P if and only if Q."</p>
+      <div data-id="418" class="overflow-x-auto mb-3">
+        <table data-id="419" class="truth-table" style="max-width:280px"><thead data-id="420"><tr data-id="421"><th data-id="422">P</th><th data-id="423">Q</th><th data-id="424">P ↔ Q</th></tr></thead><tbody data-id="425">
+          <tr data-id="426"><td data-id="427" class="tv-t">T</td><td data-id="428" class="tv-t">T</td><td data-id="429" class="tv-t">T</td></tr>
+          <tr data-id="430"><td data-id="431" class="tv-t">T</td><td data-id="432" class="tv-f">F</td><td data-id="433" class="tv-f">F</td></tr>
+          <tr data-id="434"><td data-id="435" class="tv-f">F</td><td data-id="436" class="tv-t">T</td><td data-id="437" class="tv-f">F</td></tr>
+          <tr data-id="438"><td data-id="439" class="tv-f">F</td><td data-id="440" class="tv-f">F</td><td data-id="441" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="442" class="code-block mb-3"><strong data-id="443">Example:</strong> P = "The flame burns." Q = "The seal holds."<br data-id="444"/>They rise and fall together; any asymmetry breaks the bond.</div>
+      <div data-id="445" class="mythic">Two mirrors facing each other — they reflect equally or not at all.</div>
+    </div>
+
+    <!-- Operator 6: XOR -->
+    <div data-id="446" class="op-card" id="m1-op-xor-e3f4">
+      <div data-id="447" class="flex items-center gap-3 mb-3"><span data-id="448" class="badge-gold">6</span><h3 data-id="449" class="text-lg font-bold">XOR — Exclusive Or <span data-id="450" class="font-mono text-teal">P ⊕ Q</span></h3></div>
+      <p data-id="451" class="mb-3">TRUE when exactly one of P or Q is TRUE (but NOT both).</p>
+      <div data-id="452" class="overflow-x-auto mb-3">
+        <table data-id="453" class="truth-table" style="max-width:280px"><thead data-id="454"><tr data-id="455"><th data-id="456">P</th><th data-id="457">Q</th><th data-id="458">P ⊕ Q</th></tr></thead><tbody data-id="459">
+          <tr data-id="460"><td data-id="461" class="tv-t">T</td><td data-id="462" class="tv-t">T</td><td data-id="463" class="tv-f">F</td></tr>
+          <tr data-id="464"><td data-id="465" class="tv-t">T</td><td data-id="466" class="tv-f">F</td><td data-id="467" class="tv-t">T</td></tr>
+          <tr data-id="468"><td data-id="469" class="tv-f">F</td><td data-id="470" class="tv-t">T</td><td data-id="471" class="tv-t">T</td></tr>
+          <tr data-id="472"><td data-id="473" class="tv-f">F</td><td data-id="474" class="tv-f">F</td><td data-id="475" class="tv-f">F</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="476" class="code-block mb-3"><strong data-id="477">Example:</strong> P = "The left path leads to safety." Q = "The right path leads to safety."<br data-id="478"/>Exactly one path is safe — not both, not neither.</div>
+      <div data-id="479" class="mythic">A divine test with two sacred flames — only one may be true; lighting both is heresy, lighting neither is failure.</div>
+    </div>
+
+    <!-- Operator 7: NAND -->
+    <div data-id="480" class="op-card" id="m1-op-nand-g5h6">
+      <div data-id="481" class="flex items-center gap-3 mb-3"><span data-id="482" class="badge-gold">7</span><h3 data-id="483" class="text-lg font-bold">NAND <span data-id="484" class="font-mono text-teal">P ↑ Q</span></h3></div>
+      <p data-id="485" class="mb-3">The negation of AND. FALSE only when both P and Q are TRUE. Equivalent to ¬(P ∧ Q).</p>
+      <div data-id="486" class="overflow-x-auto mb-3">
+        <table data-id="487" class="truth-table" style="max-width:280px"><thead data-id="488"><tr data-id="489"><th data-id="490">P</th><th data-id="491">Q</th><th data-id="492">P ↑ Q</th></tr></thead><tbody data-id="493">
+          <tr data-id="494"><td data-id="495" class="tv-t">T</td><td data-id="496" class="tv-t">T</td><td data-id="497" class="tv-f">F</td></tr>
+          <tr data-id="498"><td data-id="499" class="tv-t">T</td><td data-id="500" class="tv-f">F</td><td data-id="501" class="tv-t">T</td></tr>
+          <tr data-id="502"><td data-id="503" class="tv-f">F</td><td data-id="504" class="tv-t">T</td><td data-id="505" class="tv-t">T</td></tr>
+          <tr data-id="506"><td data-id="507" class="tv-f">F</td><td data-id="508" class="tv-f">F</td><td data-id="509" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="510" class="code-block mb-3"><strong data-id="511">Example:</strong> P = "The shield is raised." Q = "The sword is drawn."<br data-id="512"/>It is not the case that both are true simultaneously.</div>
+      <div data-id="513" class="mythic">A dual-lock failsafe — the alarm sounds unless both switches are thrown simultaneously.</div>
+      <div data-id="514" class="note-box note-teal mt-3"><strong data-id="515">ℹ Note:</strong> NAND is <em data-id="516">functionally complete</em> — every logical operator can be built from NAND alone.</div>
+    </div>
+
+    <!-- Operator 8: NOR -->
+    <div data-id="517" class="op-card" id="m1-op-nor-i7j8">
+      <div data-id="518" class="flex items-center gap-3 mb-3"><span data-id="519" class="badge-gold">8</span><h3 data-id="520" class="text-lg font-bold">NOR <span data-id="521" class="font-mono text-teal">P ↓ Q</span></h3></div>
+      <p data-id="522" class="mb-3">The negation of OR. TRUE only when both P and Q are FALSE. Equivalent to ¬(P ∨ Q).</p>
+      <div data-id="523" class="overflow-x-auto mb-3">
+        <table data-id="524" class="truth-table" style="max-width:280px"><thead data-id="525"><tr data-id="526"><th data-id="527">P</th><th data-id="528">Q</th><th data-id="529">P ↓ Q</th></tr></thead><tbody data-id="530">
+          <tr data-id="531"><td data-id="532" class="tv-t">T</td><td data-id="533" class="tv-t">T</td><td data-id="534" class="tv-f">F</td></tr>
+          <tr data-id="535"><td data-id="536" class="tv-t">T</td><td data-id="537" class="tv-f">F</td><td data-id="538" class="tv-f">F</td></tr>
+          <tr data-id="539"><td data-id="540" class="tv-f">F</td><td data-id="541" class="tv-t">T</td><td data-id="542" class="tv-f">F</td></tr>
+          <tr data-id="543"><td data-id="544" class="tv-f">F</td><td data-id="545" class="tv-f">F</td><td data-id="546" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="547" class="code-block mb-3"><strong data-id="548">Example:</strong> P = "The eastern tower has fallen." Q = "The western tower has fallen."<br data-id="549"/>Neither has fallen.</div>
+      <div data-id="550" class="mythic">A spell of silence that holds only when every voice in the hall is still. One sound breaks it.</div>
+      <div data-id="551" class="note-box note-teal mt-3"><strong data-id="552">ℹ Note:</strong> NOR is also <em data-id="553">functionally complete</em> — like NAND, it alone can construct any logical system.</div>
+    </div>
+
+    <!-- Quick Comparison -->
+    <section data-id="554" class="content-card" id="m1-compare-k9l0">
+      <h2 data-id="555" class="text-lg font-semibold text-gold mb-3">Quick Comparison — OR vs XOR vs NOR</h2>
+      <div data-id="556" class="overflow-x-auto">
+        <table data-id="557" class="truth-table"><thead data-id="558"><tr data-id="559"><th data-id="560">Scenario</th><th data-id="561">P=T Q=T</th><th data-id="562">P=T Q=F</th><th data-id="563">P=F Q=T</th><th data-id="564">P=F Q=F</th></tr></thead><tbody data-id="565">
+          <tr data-id="566"><td data-id="567" class="font-semibold">OR (∨)</td><td data-id="568" class="tv-t">T</td><td data-id="569" class="tv-t">T</td><td data-id="570" class="tv-t">T</td><td data-id="571" class="tv-f">F</td></tr>
+          <tr data-id="572"><td data-id="573" class="font-semibold">XOR (⊕)</td><td data-id="574" class="tv-f">F</td><td data-id="575" class="tv-t">T</td><td data-id="576" class="tv-t">T</td><td data-id="577" class="tv-f">F</td></tr>
+          <tr data-id="578"><td data-id="579" class="font-semibold">NOR (↓)</td><td data-id="580" class="tv-f">F</td><td data-id="581" class="tv-f">F</td><td data-id="582" class="tv-f">F</td><td data-id="583" class="tv-t">T</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Logical Equivalences -->
+    <section data-id="584" class="content-card" id="m1-equiv-m1n2">
+      <h2 data-id="585" class="text-lg font-semibold text-gold mb-3">Logical Equivalences</h2>
+      <div data-id="586" class="overflow-x-auto">
+        <table data-id="587" class="ref-table"><thead data-id="588"><tr data-id="589"><th data-id="590">Law</th><th data-id="591">Expression</th></tr></thead><tbody data-id="592">
+          <tr data-id="593"><td data-id="594">Double Negation</td><td data-id="595" class="font-mono">¬¬P ≡ P</td></tr>
+          <tr data-id="596"><td data-id="597">De Morgan's (AND)</td><td data-id="598" class="font-mono">¬(P ∧ Q) ≡ ¬P ∨ ¬Q</td></tr>
+          <tr data-id="599"><td data-id="600">De Morgan's (OR)</td><td data-id="601" class="font-mono">¬(P ∨ Q) ≡ ¬P ∧ ¬Q</td></tr>
+          <tr data-id="602"><td data-id="603">Implication Rewrite</td><td data-id="604" class="font-mono">P → Q ≡ ¬P ∨ Q</td></tr>
+          <tr data-id="605"><td data-id="606">Contrapositive</td><td data-id="607" class="font-mono">P → Q ≡ ¬Q → ¬P</td></tr>
+          <tr data-id="608"><td data-id="609">Biconditional Expansion</td><td data-id="610" class="font-mono">P ↔ Q ≡ (P → Q) ∧ (Q → P)</td></tr>
+          <tr data-id="611"><td data-id="612">XOR Expansion</td><td data-id="613" class="font-mono">P ⊕ Q ≡ (P ∨ Q) ∧ ¬(P ∧ Q)</td></tr>
+          <tr data-id="614"><td data-id="615">NAND Expansion</td><td data-id="616" class="font-mono">P ↑ Q ≡ ¬(P ∧ Q)</td></tr>
+          <tr data-id="617"><td data-id="618">NOR Expansion</td><td data-id="619" class="font-mono">P ↓ Q ≡ ¬(P ∨ Q)</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Operator Precedence -->
+    <section data-id="620" class="content-card" id="m1-prec-o3p4">
+      <h2 data-id="621" class="text-lg font-semibold text-gold mb-3">Operator Precedence</h2>
+      <p data-id="622" class="text-sm text-txt-muted mb-3">Highest to lowest binding strength:</p>
+      <ol data-id="623" class="list-decimal list-inside space-y-1 font-mono text-sm">
+        <li data-id="624"><span data-id="625" class="text-gold">¬</span> <span data-id="626" class="text-txt-muted font-sans">(NOT)</span></li>
+        <li data-id="627"><span data-id="628" class="text-gold">∧</span> <span data-id="629" class="text-txt-muted font-sans">(AND)</span></li>
+        <li data-id="630"><span data-id="631" class="text-gold">∨</span> <span data-id="632" class="text-txt-muted font-sans">(OR)</span></li>
+        <li data-id="633"><span data-id="634" class="text-gold">⊕</span> <span data-id="635" class="text-txt-muted font-sans">(XOR)</span></li>
+        <li data-id="636"><span data-id="637" class="text-gold">→</span> <span data-id="638" class="text-txt-muted font-sans">(IMPLIES)</span></li>
+        <li data-id="639"><span data-id="640" class="text-gold">↔</span> <span data-id="641" class="text-txt-muted font-sans">(BICONDITIONAL)</span></li>
+      </ol>
+      <div data-id="642" class="note-box note-gold mt-4"><strong data-id="643">💡 Tip:</strong> When in doubt, use parentheses. They override all precedence rules and make intent unambiguous.</div>
+    </section>
+
+    <!-- Tautologies, Contradictions & Contingencies -->
+    <section data-id="644" class="content-card" id="m1-taut-q5r6">
+      <h2 data-id="645" class="text-lg font-semibold text-gold mb-3">Tautologies, Contradictions &amp; Contingencies</h2>
+      <div data-id="646" class="overflow-x-auto">
+        <table data-id="647" class="ref-table"><thead data-id="648"><tr data-id="649"><th data-id="650">Type</th><th data-id="651">Definition</th><th data-id="652">Example</th></tr></thead><tbody data-id="653">
+          <tr data-id="654"><td data-id="655" class="font-semibold text-teal">Tautology</td><td data-id="656">Always TRUE</td><td data-id="657" class="font-mono">P ∨ ¬P</td></tr>
+          <tr data-id="658"><td data-id="659" class="font-semibold" style="color:#e74c3c">Contradiction</td><td data-id="660">Always FALSE</td><td data-id="661" class="font-mono">P ∧ ¬P</td></tr>
+          <tr data-id="662"><td data-id="663" class="font-semibold text-gold">Contingency</td><td data-id="664">TRUE for some values, FALSE for others</td><td data-id="665" class="font-mono">P → Q</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+  </div>
+  <footer data-id="666" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1</footer>
+</div>
+
+<!-- ==================== VIEW 2: PREDICATE LOGIC & SET THEORY ==================== -->
+<div data-id="667" class="view-panel" id="view-2">
+  <div data-id="668" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="669" class="mb-8">
+      <span data-id="670" class="badge-gold mb-3 inline-block">Module 2</span>
+      <h1 data-id="671" id="m2-header-s7t8" class="text-2xl md:text-3xl font-bold text-gold">Predicate Logic &amp; Set Theory</h1>
+      <p data-id="672" class="text-teal font-medium mt-1">Quantifiers, domains, set operators, and the ±∞ spectrum</p>
+    </header>
+
+    <!-- What Is Predicate Logic? -->
+    <section data-id="673" class="content-card" id="m2-intro-u9v0">
+      <h2 data-id="674" class="text-lg font-semibold text-gold mb-3">What Is Predicate Logic?</h2>
+      <p data-id="675" class="leading-relaxed">Sentential logic treats whole sentences as atomic units. Predicate logic opens them up — it lets us talk about <em data-id="676">objects</em>, <em data-id="677">properties</em>, and <em data-id="678">relations</em>. Three building blocks: <strong data-id="679">Terms</strong> (objects), <strong data-id="680">Predicates</strong> (properties applied to terms, e.g. P(x)), <strong data-id="681">Quantifiers</strong> (how many objects the predicate applies to).</p>
+    </section>
+
+    <!-- Predicate Notation Table -->
+    <section data-id="682" class="content-card" id="m2-notation-w1x2">
+      <h2 data-id="683" class="text-lg font-semibold text-gold mb-3">Predicate Notation</h2>
+      <div data-id="684" class="overflow-x-auto">
+        <table data-id="685" class="ref-table"><thead data-id="686"><tr data-id="687"><th data-id="688">Symbol</th><th data-id="689">Name</th><th data-id="690">Read As</th></tr></thead><tbody data-id="691">
+          <tr data-id="692"><td data-id="693" class="font-mono text-gold">P(x)</td><td data-id="694">Predicate</td><td data-id="695">"x has property P"</td></tr>
+          <tr data-id="696"><td data-id="697" class="font-mono text-gold">∀x</td><td data-id="698">Universal Quantifier</td><td data-id="699">"For all x… / Every x…"</td></tr>
+          <tr data-id="700"><td data-id="701" class="font-mono text-gold">∃x</td><td data-id="702">Existential Quantifier</td><td data-id="703">"There exists an x… / Some x…"</td></tr>
+          <tr data-id="704"><td data-id="705" class="font-mono text-gold">¬∃x</td><td data-id="706">Negated Existential</td><td data-id="707">"There is no x… / No x…"</td></tr>
+          <tr data-id="708"><td data-id="709" class="font-mono text-gold">∃!x</td><td data-id="710">Unique Existential</td><td data-id="711">"There exists exactly one x…"</td></tr>
+          <tr data-id="712"><td data-id="713" class="font-mono text-gold">∀x ∀y</td><td data-id="714">Nested Universal</td><td data-id="715">"For all x and for all y…"</td></tr>
+          <tr data-id="716"><td data-id="717" class="font-mono text-gold">∃x ∃y</td><td data-id="718">Nested Existential</td><td data-id="719">"There exists an x and a y…"</td></tr>
+          <tr data-id="720"><td data-id="721" class="font-mono text-gold">D</td><td data-id="722">Domain of Discourse</td><td data-id="723">The universe of objects x ranges over</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Domain of Discourse -->
+    <section data-id="724" class="content-card" id="m2-domain-y3z4">
+      <h2 data-id="725" class="text-lg font-semibold text-gold mb-3">The Domain of Discourse</h2>
+      <p data-id="726" class="mb-3">The domain D determines what "all" and "some" refer to. Changing D can flip a statement's truth value:</p>
+      <div data-id="727" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+        <div data-id="728" class="code-block"><strong data-id="729">D = {humans}</strong><br data-id="730"/>∀x P(x) where P(x) = "x is mortal"<br data-id="731"/><span data-id="732" class="text-green-400">→ TRUE</span> — every human is mortal.</div>
+        <div data-id="733" class="code-block"><strong data-id="734">D = {gods, humans}</strong><br data-id="735"/>∀x P(x) where P(x) = "x is mortal"<br data-id="736"/><span data-id="737" class="text-red-400">→ FALSE</span> — gods are not mortal.</div>
+      </div>
+      <div data-id="738" class="proof-box"><pre data-id="739">Rule: Always specify your domain. An unspecified domain is an unfinished statement.</pre></div>
+    </section>
+
+    <!-- Quantifiers in Detail -->
+    <div data-id="740" class="op-card" id="m2-univ-a5b6">
+      <h3 data-id="741" class="text-lg font-bold text-gold mb-2">Universal Quantifier — <span data-id="742" class="font-mono">∀x P(x)</span></h3>
+      <p data-id="743" class="mb-2"><strong data-id="744">Meaning:</strong> P holds for every object in the domain. FALSE if even one object fails.</p>
+      <div data-id="745" class="code-block mb-2"><strong data-id="746">Example:</strong> D = {Alice, Bob, Carol}, P(x) = "x has studied logic" → All three must hold.</div>
+      <div data-id="747" class="mythic">The edict of an absolute sovereign — one exemption breaks the decree.</div>
+    </div>
+    <div data-id="748" class="op-card" id="m2-exist-c7d8">
+      <h3 data-id="749" class="text-lg font-bold text-gold mb-2">Existential Quantifier — <span data-id="750" class="font-mono">∃x P(x)</span></h3>
+      <p data-id="751" class="mb-2"><strong data-id="752">Meaning:</strong> P holds for at least one object. FALSE if no object satisfies P.</p>
+      <div data-id="753" class="code-block mb-2"><strong data-id="754">Example:</strong> Same domain — at least one of the three has studied logic. One is enough.</div>
+      <div data-id="755" class="mythic">A rumor that one warrior survived — just one confirmed survivor validates it entirely.</div>
+    </div>
+    <div data-id="756" class="op-card" id="m2-unique-e9f0">
+      <h3 data-id="757" class="text-lg font-bold text-gold mb-2">Unique Existential — <span data-id="758" class="font-mono">∃!x P(x)</span></h3>
+      <p data-id="759" class="mb-2"><strong data-id="760">Meaning:</strong> P holds for exactly one object. No more, no fewer.</p>
+      <div data-id="761" class="code-block mb-2"><strong data-id="762">Expansion:</strong> <span data-id="763" class="font-mono">∃!x P(x) ≡ ∃x [P(x) ∧ ∀y (P(y) → y = x)]</span><br data-id="764"/><strong data-id="765">Example:</strong> ∃!x (x is the current Phoenix Network Director) — exactly one person holds that role.</div>
+    </div>
+
+    <!-- Quantifier Negation Rules -->
+    <section data-id="766" class="content-card" id="m2-qneg-g1h2">
+      <h2 data-id="767" class="text-lg font-semibold text-gold mb-3">Quantifier Negation Rules</h2>
+      <div data-id="768" class="overflow-x-auto">
+        <table data-id="769" class="ref-table"><thead data-id="770"><tr data-id="771"><th data-id="772">Original</th><th data-id="773">Negation</th><th data-id="774">English Translation</th></tr></thead><tbody data-id="775">
+          <tr data-id="776"><td data-id="777" class="font-mono">∀x P(x)</td><td data-id="778" class="font-mono">≡ ¬∃x ¬P(x)</td><td data-id="779">"All" ↔ "There is none that isn't"</td></tr>
+          <tr data-id="780"><td data-id="781" class="font-mono">¬∀x P(x)</td><td data-id="782" class="font-mono">≡ ∃x ¬P(x)</td><td data-id="783">"Not all" = "At least one isn't"</td></tr>
+          <tr data-id="784"><td data-id="785" class="font-mono">∃x P(x)</td><td data-id="786" class="font-mono">≡ ¬∀x ¬P(x)</td><td data-id="787">"Some" ↔ "Not all fail"</td></tr>
+          <tr data-id="788"><td data-id="789" class="font-mono">¬∃x P(x)</td><td data-id="790" class="font-mono">≡ ∀x ¬P(x)</td><td data-id="791">"None" = "All fail"</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="792" class="note-box note-red mt-4"><strong data-id="793">⚠ Critical trap:</strong> Negating "everyone" does NOT give you "no one." <span data-id="794" class="font-mono">¬∀x P(x)</span> = "Not everyone" = "at least one person doesn't" — NOT "no one."</div>
+    </section>
+
+    <!-- ±∞ Quantifier Spectrum -->
+    <section data-id="795" class="content-card featured" id="m2-spectrum-i3j4">
+      <h2 data-id="796" class="text-xl font-bold text-gold mb-1">★ The ±∞ Quantifier Spectrum</h2>
+      <p data-id="797" class="text-teal font-medium text-sm mb-4">The Infinity Week Analogy</p>
+      <p data-id="798" class="mb-4 leading-relaxed">Imagine a number line stretching from −∞ to +∞. Each point represents how many objects in the domain satisfy predicate P — from none at all, to every single one.</p>
+
+      <!-- Number line visual -->
+      <div data-id="799" class="number-line mb-6">
+        <div data-id="800" class="number-line-bar"></div>
+        <div data-id="801" class="nl-point" style="left:5%"><div data-id="802" class="nl-dot" style="background:#e74c3c"></div><span data-id="803" class="text-red-400 font-bold">−∞</span><br data-id="804"/><span data-id="805" class="text-txt-muted" style="font-size:0.65rem">NONE<br data-id="806"/>¬∃x P(x)</span></div>
+        <div data-id="807" class="nl-point" style="left:50%"><div data-id="808" class="nl-dot" style="background:#4db6ac"></div><span data-id="809" class="text-teal font-bold">MID</span><br data-id="810"/><span data-id="811" class="text-txt-muted" style="font-size:0.65rem">SOME<br data-id="812"/>∃x P(x)</span></div>
+        <div data-id="813" class="nl-point" style="left:95%"><div data-id="814" class="nl-dot" style="background:#27ae60"></div><span data-id="815" class="text-green-400 font-bold">+∞</span><br data-id="816"/><span data-id="817" class="text-txt-muted" style="font-size:0.65rem">ALL<br data-id="818"/>∀x P(x)</span></div>
+      </div>
+
+      <div data-id="819" class="overflow-x-auto mb-4">
+        <table data-id="820" class="ref-table"><thead data-id="821"><tr data-id="822"><th data-id="823">Position</th><th data-id="824">Logical Form</th><th data-id="825">English</th><th data-id="826">Meaning</th></tr></thead><tbody data-id="827">
+          <tr data-id="828"><td data-id="829" class="text-green-400 font-bold">+∞</td><td data-id="830" class="font-mono">∀x P(x)</td><td data-id="831">Everyone / Everything / Always</td><td data-id="832">Total coverage — whole domain satisfies P</td></tr>
+          <tr data-id="833"><td data-id="834" class="text-teal font-bold">Midpoint</td><td data-id="835" class="font-mono">∃x P(x)</td><td data-id="836">Someone / Something / Sometimes</td><td data-id="837">At least one point exists</td></tr>
+          <tr data-id="838"><td data-id="839" class="text-red-400 font-bold">−∞</td><td data-id="840" class="font-mono">¬∃x P(x) = ∀x ¬P(x)</td><td data-id="841">No one / Nothing / Never</td><td data-id="842">Zero coverage — nothing satisfies P</td></tr>
+        </tbody></table>
+      </div>
+
+      <h3 data-id="843" class="text-base font-semibold text-gold mt-6 mb-3">Negation on the Number Line</h3>
+      <div data-id="844" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div data-id="845" class="code-block"><strong data-id="846">Negating from +∞ — All → Not All:</strong><br data-id="847"/>"Everyone loves logic." → ∀x L(x) → +∞<br data-id="848"/>Negate: ¬∀x L(x) = ∃x ¬L(x)<br data-id="849"/>→ "Not everyone loves logic."<br data-id="850"/><span data-id="851" class="text-gold">You step away from +∞ but land in the middle — not at −∞.</span><br data-id="852"/>"Not everyone" ≠ "No one."</div>
+        <div data-id="853" class="code-block"><strong data-id="854">Negating from −∞ — None → Not None = Some:</strong><br data-id="855"/>"No one loves logic." → ¬∃x L(x) → −∞<br data-id="856"/>Negate: ∃x L(x)<br data-id="857"/>→ "Someone loves logic."<br data-id="858"/><span data-id="859" class="text-gold">You step away from −∞ and land in the middle.</span></div>
+      </div>
+
+      <h3 data-id="860" class="text-base font-semibold text-gold mt-6 mb-3">The English Language Connection</h3>
+      <div data-id="861" class="overflow-x-auto mb-4">
+        <table data-id="862" class="ref-table"><thead data-id="863"><tr data-id="864"><th data-id="865">English Word</th><th data-id="866">Spectrum Position</th><th data-id="867">Logical Form</th></tr></thead><tbody data-id="868">
+          <tr data-id="869"><td data-id="870">All, Every, Always, Everywhere</td><td data-id="871" class="text-green-400 font-bold">+∞</td><td data-id="872" class="font-mono">∀x P(x)</td></tr>
+          <tr data-id="873"><td data-id="874">Most, Many, Usually</td><td data-id="875" class="text-green-300">Near +∞</td><td data-id="876" class="text-txt-muted">Fuzzy — not standard FOL</td></tr>
+          <tr data-id="877"><td data-id="878">Some, At least one, Sometimes</td><td data-id="879" class="text-teal font-bold">Midpoint</td><td data-id="880" class="font-mono">∃x P(x)</td></tr>
+          <tr data-id="881"><td data-id="882">Rarely, Seldom</td><td data-id="883" class="text-red-300">Near −∞</td><td data-id="884" class="text-txt-muted">Fuzzy — not standard FOL</td></tr>
+          <tr data-id="885"><td data-id="886">No, None, Never, Nowhere, Nobody</td><td data-id="887" class="text-red-400 font-bold">−∞</td><td data-id="888" class="font-mono">¬∃x P(x) = ∀x ¬P(x)</td></tr>
+        </tbody></table>
+      </div>
+
+      <div data-id="889" class="note-box note-teal"><strong data-id="890">💡 Insight:</strong> English speakers slide between these positions constantly. "Not always" ≠ "never." "Not impossible" ≠ "certain." "Not everyone agrees" ≠ "no one agrees." The infinity spectrum makes these gaps visceral — they are not philosophical distinctions, they are measurable distances on a line.</div>
+      <div data-id="891" class="mythic mt-3">The poles are the only stable shores of an infinite sea. Push off from either shore and you drift into open water. Drift twice and the current carries you back to where you launched.</div>
+    </section>
+
+    <!-- Set Operators -->
+    <section data-id="892" class="content-card" id="m2-sets-k5l6">
+      <h2 data-id="893" class="text-xl font-semibold text-gold mb-4">Set Operators</h2>
+
+      <h3 data-id="894" class="text-base font-semibold text-gold mb-3">Core Set Notation</h3>
+      <div data-id="895" class="overflow-x-auto mb-6">
+        <table data-id="896" class="ref-table"><thead data-id="897"><tr data-id="898"><th data-id="899">Symbol</th><th data-id="900">Name</th><th data-id="901">Read As</th><th data-id="902">Meaning</th></tr></thead><tbody data-id="903">
+          <tr data-id="904"><td data-id="905" class="font-mono text-gold">∈</td><td data-id="906">Element-of</td><td data-id="907">"x is in"</td><td data-id="908">x is a member of set A</td></tr>
+          <tr data-id="909"><td data-id="910" class="font-mono text-gold">∉</td><td data-id="911">Not element-of</td><td data-id="912">"x is not in"</td><td data-id="913">x is not a member of set A</td></tr>
+          <tr data-id="914"><td data-id="915" class="font-mono text-gold">∅</td><td data-id="916">Empty Set</td><td data-id="917">"the empty set"</td><td data-id="918">A set with no elements</td></tr>
+          <tr data-id="919"><td data-id="920" class="font-mono text-gold">A ⊆ B</td><td data-id="921">Subset</td><td data-id="922">"A is a subset of B"</td><td data-id="923">Every element of A is also in B</td></tr>
+          <tr data-id="924"><td data-id="925" class="font-mono text-gold">A ⊂ B</td><td data-id="926">Proper Subset</td><td data-id="927">"A is a proper subset of B"</td><td data-id="928">A ⊆ B but A ≠ B</td></tr>
+          <tr data-id="929"><td data-id="930" class="font-mono text-gold">A = B</td><td data-id="931">Set Equality</td><td data-id="932">"A equals B"</td><td data-id="933">A ⊆ B and B ⊆ A</td></tr>
+          <tr data-id="934"><td data-id="935" class="font-mono text-gold">|A|</td><td data-id="936">Cardinality</td><td data-id="937">"the size of A"</td><td data-id="938">Number of elements in A</td></tr>
+          <tr data-id="939"><td data-id="940" class="font-mono text-gold">𝒫(A)</td><td data-id="941">Power Set</td><td data-id="942">"the power set of A"</td><td data-id="943">The set of all subsets of A</td></tr>
+          <tr data-id="944"><td data-id="945" class="font-mono text-gold">Aᶜ</td><td data-id="946">Complement</td><td data-id="947">"the complement of A"</td><td data-id="948">All elements in D but not in A</td></tr>
+        </tbody></table>
+      </div>
+
+      <h3 data-id="949" class="text-base font-semibold text-gold mb-3">Set Operations</h3>
+      <div data-id="950" class="overflow-x-auto mb-6">
+        <table data-id="951" class="ref-table"><thead data-id="952"><tr data-id="953"><th data-id="954">Symbol</th><th data-id="955">Name</th><th data-id="956">Definition</th><th data-id="957">Mythic Analogy</th></tr></thead><tbody data-id="958">
+          <tr data-id="959"><td data-id="960" class="font-mono text-gold">A ∪ B</td><td data-id="961">Union</td><td data-id="962">All elements in A or B (or both)</td><td data-id="963" class="text-txt-muted italic text-sm">Two kingdoms merging — any citizen of either belongs</td></tr>
+          <tr data-id="964"><td data-id="965" class="font-mono text-gold">A ∩ B</td><td data-id="966">Intersection</td><td data-id="967">Elements in both A and B</td><td data-id="968" class="text-txt-muted italic text-sm">The treaty zone — only those recognized by both sides</td></tr>
+          <tr data-id="969"><td data-id="970" class="font-mono text-gold">A \ B</td><td data-id="971">Difference</td><td data-id="972">Elements in A but not in B</td><td data-id="973" class="text-txt-muted italic text-sm">A kingdom expelling all dual citizens</td></tr>
+          <tr data-id="974"><td data-id="975" class="font-mono text-gold">A × B</td><td data-id="976">Cartesian Product</td><td data-id="977">All ordered pairs (a,b) where a∈A, b∈B</td><td data-id="978" class="text-txt-muted italic text-sm">Every possible diplomatic pairing between two nations</td></tr>
+          <tr data-id="979"><td data-id="980" class="font-mono text-gold">Aᶜ</td><td data-id="981">Complement</td><td data-id="982">Everything in D not in A</td><td data-id="983" class="text-txt-muted italic text-sm">The excluded — everyone outside the law's reach</td></tr>
+        </tbody></table>
+      </div>
+
+      <h3 data-id="984" class="text-base font-semibold text-gold mb-3">Concrete Example</h3>
+      <div data-id="985" class="code-block mb-6">
+A = { 1, 2, 3, 4 }   B = { 3, 4, 5, 6 }   D = { 1, 2, 3, 4, 5, 6, 7 }
+
+A ∪ B = { 1, 2, 3, 4, 5, 6 }     ← everything in either
+A ∩ B = { 3, 4 }                  ← only the overlap
+A \ B = { 1, 2 }                  ← A minus what B claims
+B \ A = { 5, 6 }                  ← B minus what A claims
+Aᶜ    = { 5, 6, 7 }               ← everything in D outside A
+      </div>
+
+      <h3 data-id="986" class="text-base font-semibold text-gold mb-3">The Bridge: Set Operators ↔ Logic Operators</h3>
+      <div data-id="987" class="overflow-x-auto mb-4">
+        <table data-id="988" class="ref-table"><thead data-id="989"><tr data-id="990"><th data-id="991">Set Operation</th><th data-id="992">Logical Equivalent</th><th data-id="993">English</th></tr></thead><tbody data-id="994">
+          <tr data-id="995"><td data-id="996" class="font-mono">A ∪ B</td><td data-id="997" class="font-mono">P(x) ∨ Q(x)</td><td data-id="998">x is in A or B</td></tr>
+          <tr data-id="999"><td data-id="1000" class="font-mono">A ∩ B</td><td data-id="1001" class="font-mono">P(x) ∧ Q(x)</td><td data-id="1002">x is in A and B</td></tr>
+          <tr data-id="1003"><td data-id="1004" class="font-mono">Aᶜ</td><td data-id="1005" class="font-mono">¬P(x)</td><td data-id="1006">x is not in A</td></tr>
+          <tr data-id="1007"><td data-id="1008" class="font-mono">A ⊆ B</td><td data-id="1009" class="font-mono">∀x (P(x) → Q(x))</td><td data-id="1010">If x is in A, then x is in B</td></tr>
+          <tr data-id="1011"><td data-id="1012" class="font-mono">A = B</td><td data-id="1013" class="font-mono">∀x (P(x) ↔ Q(x))</td><td data-id="1014">x is in A iff x is in B</td></tr>
+          <tr data-id="1015"><td data-id="1016" class="font-mono">A ∩ B = ∅</td><td data-id="1017" class="font-mono">¬∃x (P(x) ∧ Q(x))</td><td data-id="1018">No x belongs to both A and B</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="1019" class="note-box note-teal"><strong data-id="1020">💡 Insight:</strong> Every set operation is a quantifier statement in disguise. Fluency in one gives you fluency in the other.</div>
+
+      <h3 data-id="1021" class="text-base font-semibold text-gold mt-6 mb-3">Power Set</h3>
+      <p data-id="1022" class="mb-2">If |A| = n, then |𝒫(A)| = 2ⁿ</p>
+      <div data-id="1023" class="code-block mb-3">
+A = {sword, shield} → |A| = 2
+𝒫(A) = {∅, {sword}, {shield}, {sword, shield}} → |𝒫(A)| = 4 = 2²
+      </div>
+      <div data-id="1024" class="mythic">Every subset is a possible loadout. Two weapons yield four loadouts. Every additional item doubles the possibilities.</div>
+    </section>
+
+    <!-- Worked Examples -->
+    <section data-id="1025" class="content-card" id="m2-examples-m7n8">
+      <h2 data-id="1026" class="text-lg font-semibold text-gold mb-4">Worked Examples</h2>
+      <div data-id="1027" class="space-y-4">
+        <div data-id="1028" class="proof-box"><pre data-id="1029"><strong data-id="1030">1.</strong> "Every student who passed the exam received a certificate."
+   Let P(x) = "x passed",  C(x) = "x received a certificate"
+   ∀x (P(x) → C(x))
+   In sets: passers-set ⊆ certificate-holders-set</pre></div>
+        <div data-id="1031" class="proof-box"><pre data-id="1032"><strong data-id="1033">2.</strong> "Some Phoenix Network member knows both logic and rhetoric."
+   Let L(x) = "x knows logic",  R(x) = "x knows rhetoric"
+   ∃x (L(x) ∧ R(x))
+   In sets: L ∩ R ≠ ∅</pre></div>
+        <div data-id="1034" class="proof-box"><pre data-id="1035"><strong data-id="1036">3.</strong> "No one who knows logic is without a domain."
+   Let L(x) = "x knows logic",  D(x) = "x has a domain"
+   ¬∃x (L(x) ∧ ¬D(x))  ≡  ∀x (L(x) → D(x))
+   In sets: logic-knowers ⊆ domain-havers</pre></div>
+      </div>
+    </section>
+  </div>
+  <footer data-id="1037" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1</footer>
+</div>
+
+<!-- ==================== VIEW 3: INFERENCE RULES ==================== -->
+<div data-id="1038" class="view-panel" id="view-3">
+  <div data-id="1039" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="1040" class="mb-8">
+      <span data-id="1041" class="badge-gold mb-3 inline-block">Module 3</span>
+      <h1 data-id="1042" id="m3-header-o9p0" class="text-2xl md:text-3xl font-bold text-gold">Inference Rules</h1>
+      <p data-id="1043" class="text-teal font-medium mt-1">The 11 licensed moves of formal logic</p>
+    </header>
+
+    <section data-id="1044" class="content-card" id="m3-intro-q1r2">
+      <h2 data-id="1045" class="text-lg font-semibold text-gold mb-3">What Are Inference Rules?</h2>
+      <p data-id="1046" class="leading-relaxed mb-3">Inference rules are the licensed moves of formal logic. A proof is a sequence of steps where each line follows from previous lines via a named, validated rule. Each rule is shown as: Premise(s) / horizontal line / Conclusion.</p>
+      <p data-id="1047" class="leading-relaxed"><strong data-id="1048">Two categories:</strong></p>
+      <ul data-id="1049" class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li data-id="1050"><strong data-id="1051">Rules of Inference</strong> (Introduction/Elimination): Derive new statements from existing ones</li>
+        <li data-id="1052"><strong data-id="1053">Rules of Replacement</strong> (Equivalences): Swap a subformula for a logically equivalent one — can be applied to ANY subformula, not just whole lines</li>
+      </ul>
+    </section>
+
+    <h2 data-id="1054" class="text-xl font-bold text-gold mb-4 mt-8">Rules of Inference</h2>
+
+    <!-- Rule 1: MP -->
+    <div data-id="1055" class="op-card" id="m3-mp-s3t4">
+      <div data-id="1056" class="flex items-center gap-3 mb-2"><span data-id="1057" class="badge-gold">1</span><h3 data-id="1058" class="text-lg font-bold">Modus Ponens (MP)</h3></div>
+      <p data-id="1059" class="text-txt-muted text-sm italic mb-3">"The mode of putting — affirming the antecedent"</p>
+      <div data-id="1060" class="proof-box mb-3"><pre data-id="1061">P → Q
+P
+───────
+∴ Q</pre></div>
+      <p data-id="1062" class="mb-2"><strong data-id="1063">Reading:</strong> If P implies Q, and P is true, then Q must be true.</p>
+      <div data-id="1064" class="code-block mb-3">1. If the beacon is lit, the fleet will sail.  (B → F)
+2. The beacon is lit.                         (B)
+3. ∴ The fleet will sail.                     (F) — MP on 1, 2</div>
+      <div data-id="1065" class="mythic">The prophecy fires. The condition was met; the consequence is now unavoidable.</div>
+    </div>
+
+    <!-- Rule 2: MT -->
+    <div data-id="1066" class="op-card" id="m3-mt-u5v6">
+      <div data-id="1067" class="flex items-center gap-3 mb-2"><span data-id="1068" class="badge-gold">2</span><h3 data-id="1069" class="text-lg font-bold">Modus Tollens (MT)</h3></div>
+      <p data-id="1070" class="text-txt-muted text-sm italic mb-3">"The mode of taking — denying the consequent"</p>
+      <div data-id="1071" class="proof-box mb-3"><pre data-id="1072">P → Q
+¬Q
+───────
+∴ ¬P</pre></div>
+      <p data-id="1073" class="mb-2"><strong data-id="1074">Reading:</strong> If P implies Q, and Q is false, then P must be false.</p>
+      <div data-id="1075" class="code-block mb-3">1. If the relic is intact, the seal holds.    (R → S)
+2. The seal does not hold.                   (¬S)
+3. ∴ The relic is not intact.                (¬R) — MT on 1, 2</div>
+      <div data-id="1076" class="mythic">The seal has broken. We work backwards from consequence to cause.</div>
+      <div data-id="1077" class="note-box note-red mt-3"><strong data-id="1078">⚠ Warning:</strong> Affirming the consequent (Q, P→Q ∴ P) — <strong data-id="1079">INVALID</strong>. Denying the antecedent (¬P, P→Q ∴ ¬Q) — <strong data-id="1080">INVALID</strong>.</div>
+    </div>
+
+    <!-- Rule 3: HS -->
+    <div data-id="1081" class="op-card" id="m3-hs-w7x8">
+      <div data-id="1082" class="flex items-center gap-3 mb-2"><span data-id="1083" class="badge-gold">3</span><h3 data-id="1084" class="text-lg font-bold">Hypothetical Syllogism (HS)</h3></div>
+      <p data-id="1085" class="text-txt-muted text-sm italic mb-3">"Chaining conditionals"</p>
+      <div data-id="1086" class="proof-box mb-3"><pre data-id="1087">P → Q
+Q → R
+───────
+∴ P → R</pre></div>
+      <p data-id="1088" class="mb-2"><strong data-id="1089">Reading:</strong> Transitivity of implication — chain two conditionals into one.</p>
+      <div data-id="1090" class="code-block mb-3">1. If forge is hot, metal softens.       (F → M)
+2. If metal softens, it can be shaped.  (M → S)
+3. ∴ If forge is hot, metal can be shaped. (F → S) — HS on 1, 2</div>
+      <div data-id="1091" class="mythic">A chain of oaths — A swore to B, B swore to C. A is bound to C, even without ever meeting.</div>
+    </div>
+
+    <!-- Rule 4: DS -->
+    <div data-id="1092" class="op-card" id="m3-ds-y9z0">
+      <div data-id="1093" class="flex items-center gap-3 mb-2"><span data-id="1094" class="badge-gold">4</span><h3 data-id="1095" class="text-lg font-bold">Disjunctive Syllogism (DS)</h3></div>
+      <p data-id="1096" class="text-txt-muted text-sm italic mb-3">"Eliminating a disjunct"</p>
+      <div data-id="1097" class="proof-box mb-3"><pre data-id="1098">P ∨ Q
+¬P
+───────
+∴ Q</pre></div>
+      <p data-id="1099" class="mb-2"><strong data-id="1100">Reading:</strong> One of P or Q is true. P is false. Therefore Q must be true.</p>
+      <div data-id="1101" class="code-block mb-3">1. The spy entered by east gate or west gate.  (E ∨ W)
+2. Not east gate.                              (¬E)
+3. ∴ West gate.                                (W) — DS on 1, 2</div>
+      <div data-id="1102" class="mythic">Two suspects. One is cleared. The other is convicted by elimination.</div>
+    </div>
+
+    <!-- Rule 5: CD -->
+    <div data-id="1103" class="op-card" id="m3-cd-a1b2">
+      <div data-id="1104" class="flex items-center gap-3 mb-2"><span data-id="1105" class="badge-gold">5</span><h3 data-id="1106" class="text-lg font-bold">Constructive Dilemma (CD)</h3></div>
+      <div data-id="1107" class="proof-box mb-3"><pre data-id="1108">(P → Q) ∧ (R → S)
+P ∨ R
+───────
+∴ Q ∨ S</pre></div>
+      <p data-id="1109" class="mb-2"><strong data-id="1110">Reading:</strong> Two paths (P or R), each leads somewhere (Q or S). Since one path must be taken, one destination must be reached.</p>
+      <div data-id="1111" class="code-block mb-3">1. If advance, gain ground; if retreat, regroup.  (A → G) ∧ (R → E)
+2. Will advance or retreat.                       (A ∨ R)
+3. ∴ Will gain ground or regroup.                 (G ∨ E) — CD on 1, 2</div>
+      <div data-id="1112" class="mythic">Two roads, each with its own reward. You must walk one. Therefore you must earn one reward.</div>
+    </div>
+
+    <!-- Rule 6: DD -->
+    <div data-id="1113" class="op-card" id="m3-dd-c3d4">
+      <div data-id="1114" class="flex items-center gap-3 mb-2"><span data-id="1115" class="badge-gold">6</span><h3 data-id="1116" class="text-lg font-bold">Destructive Dilemma (DD)</h3></div>
+      <div data-id="1117" class="proof-box mb-3"><pre data-id="1118">(P → Q) ∧ (R → S)
+¬Q ∨ ¬S
+───────
+∴ ¬P ∨ ¬R</pre></div>
+      <p data-id="1119" class="mb-2"><strong data-id="1120">Reading:</strong> If neither outcome is acceptable, neither antecedent can be maintained.</p>
+      <div data-id="1121" class="mythic">Both roads are blocked. Therefore neither journey can be completed.</div>
+    </div>
+
+    <!-- Rule 7: Simp -->
+    <div data-id="1122" class="op-card" id="m3-simp-e5f6">
+      <div data-id="1123" class="flex items-center gap-3 mb-2"><span data-id="1124" class="badge-gold">7</span><h3 data-id="1125" class="text-lg font-bold">Simplification (Simp)</h3></div>
+      <div data-id="1126" class="proof-box mb-3"><pre data-id="1127">P ∧ Q
+───────
+∴ P       (also valid: ∴ Q)</pre></div>
+      <p data-id="1128"><strong data-id="1129">Reading:</strong> If both P and Q are true together, P alone is certainly true.</p>
+    </div>
+
+    <!-- Rule 8: Conj -->
+    <div data-id="1130" class="op-card" id="m3-conj-g7h8">
+      <div data-id="1131" class="flex items-center gap-3 mb-2"><span data-id="1132" class="badge-gold">8</span><h3 data-id="1133" class="text-lg font-bold">Conjunction (Conj)</h3></div>
+      <div data-id="1134" class="proof-box mb-3"><pre data-id="1135">P
+Q
+───────
+∴ P ∧ Q</pre></div>
+      <p data-id="1136"><strong data-id="1137">Reading:</strong> If P is true on one line and Q on another, combine them.</p>
+    </div>
+
+    <!-- Rule 9: Add -->
+    <div data-id="1138" class="op-card" id="m3-add-i9j0">
+      <div data-id="1139" class="flex items-center gap-3 mb-2"><span data-id="1140" class="badge-gold">9</span><h3 data-id="1141" class="text-lg font-bold">Addition (Add)</h3></div>
+      <div data-id="1142" class="proof-box mb-3"><pre data-id="1143">P
+───────
+∴ P ∨ Q</pre></div>
+      <p data-id="1144" class="mb-2"><strong data-id="1145">Reading:</strong> If P is true, "P or Q" is automatically true — regardless of Q.</p>
+      <div data-id="1146" class="note-box note-gold"><strong data-id="1147">💡 Note:</strong> Addition feels counterintuitive but is a critical setup move — it manufactures a disjunction that a later Disjunctive Syllogism can consume.</div>
+    </div>
+
+    <!-- Rule 10: Abs -->
+    <div data-id="1148" class="op-card" id="m3-abs-k1l2">
+      <div data-id="1149" class="flex items-center gap-3 mb-2"><span data-id="1150" class="badge-gold">10</span><h3 data-id="1151" class="text-lg font-bold">Absorption (Abs)</h3></div>
+      <div data-id="1152" class="proof-box mb-3"><pre data-id="1153">P → Q
+───────
+∴ P → (P ∧ Q)</pre></div>
+      <p data-id="1154"><strong data-id="1155">Reading:</strong> If P implies Q, then P implies (P and Q) — because asserting P guarantees Q anyway.</p>
+    </div>
+
+    <!-- Rule 11: Res -->
+    <div data-id="1156" class="op-card" id="m3-res-m3n4">
+      <div data-id="1157" class="flex items-center gap-3 mb-2"><span data-id="1158" class="badge-gold">11</span><h3 data-id="1159" class="text-lg font-bold">Resolution (Res)</h3></div>
+      <p data-id="1160" class="text-txt-muted text-sm italic mb-3">"Primary tool in automated theorem proving"</p>
+      <div data-id="1161" class="proof-box mb-3"><pre data-id="1162">P ∨ Q
+¬P ∨ R
+───────
+∴ Q ∨ R</pre></div>
+      <p data-id="1163" class="mb-2"><strong data-id="1164">Reading:</strong> The shared variable P and ¬P cancel. Remaining disjuncts merge.</p>
+      <div data-id="1165" class="code-block mb-3">1. Scout reports or alarm sounds.            (S ∨ A)
+2. Scout doesn't report or gate closes.     (¬S ∨ G)
+3. ∴ Alarm sounds or gate closes.           (A ∨ G) — Res on 1, 2</div>
+    </div>
+
+    <!-- Rules of Replacement -->
+    <section data-id="1166" class="content-card" id="m3-replacement-o5p6">
+      <h2 data-id="1167" class="text-xl font-semibold text-gold mb-2">Rules of Replacement (Equivalences)</h2>
+      <p data-id="1168" class="text-txt-muted text-sm mb-4">These can be applied to any subformula in any line — not just whole statements.</p>
+      <div data-id="1169" class="overflow-x-auto">
+        <table data-id="1170" class="ref-table"><thead data-id="1171"><tr data-id="1172"><th data-id="1173">Name</th><th data-id="1174">Rule</th></tr></thead><tbody data-id="1175">
+          <tr data-id="1176"><td data-id="1177">Double Negation (DN)</td><td data-id="1178" class="font-mono">¬¬P ≡ P</td></tr>
+          <tr data-id="1179"><td data-id="1180">De Morgan's (DeM)</td><td data-id="1181" class="font-mono">¬(P ∧ Q) ≡ ¬P ∨ ¬Q<br data-id="1182"/>¬(P ∨ Q) ≡ ¬P ∧ ¬Q</td></tr>
+          <tr data-id="1183"><td data-id="1184">Implication (Impl)</td><td data-id="1185" class="font-mono">P → Q ≡ ¬P ∨ Q</td></tr>
+          <tr data-id="1186"><td data-id="1187">Contraposition (Contra)</td><td data-id="1188" class="font-mono">P → Q ≡ ¬Q → ¬P</td></tr>
+          <tr data-id="1189"><td data-id="1190">Exportation (Exp)</td><td data-id="1191" class="font-mono">(P ∧ Q) → R ≡ P → (Q → R)</td></tr>
+          <tr data-id="1192"><td data-id="1193">Biconditional (Bic)</td><td data-id="1194" class="font-mono">P ↔ Q ≡ (P → Q) ∧ (Q → P)</td></tr>
+          <tr data-id="1195"><td data-id="1196">Commutation (Com)</td><td data-id="1197" class="font-mono">P ∧ Q ≡ Q ∧ P &nbsp;/&nbsp; P ∨ Q ≡ Q ∨ P</td></tr>
+          <tr data-id="1198"><td data-id="1199">Association (Assoc)</td><td data-id="1200" class="font-mono">P ∧ (Q ∧ R) ≡ (P ∧ Q) ∧ R</td></tr>
+          <tr data-id="1201"><td data-id="1202">Distribution (Dist)</td><td data-id="1203" class="font-mono">P ∧ (Q ∨ R) ≡ (P ∧ Q) ∨ (P ∧ R)</td></tr>
+          <tr data-id="1204"><td data-id="1205">Tautology (Taut)</td><td data-id="1206" class="font-mono">P ≡ P ∨ P &nbsp;/&nbsp; P ≡ P ∧ P</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Valid vs Invalid -->
+    <section data-id="1207" class="content-card" id="m3-valid-q7r8">
+      <h2 data-id="1208" class="text-lg font-semibold text-gold mb-3">Valid vs. Invalid — Quick Reference</h2>
+      <div data-id="1209" class="overflow-x-auto">
+        <table data-id="1210" class="ref-table"><thead data-id="1211"><tr data-id="1212"><th data-id="1213">Form</th><th data-id="1214">Name</th><th data-id="1215">Status</th></tr></thead><tbody data-id="1216">
+          <tr data-id="1217"><td data-id="1218" class="font-mono">P→Q, P ∴ Q</td><td data-id="1219">Modus Ponens</td><td data-id="1220" class="text-green-400 font-bold">✅ Valid</td></tr>
+          <tr data-id="1221"><td data-id="1222" class="font-mono">P→Q, ¬Q ∴ ¬P</td><td data-id="1223">Modus Tollens</td><td data-id="1224" class="text-green-400 font-bold">✅ Valid</td></tr>
+          <tr data-id="1225"><td data-id="1226" class="font-mono">P→Q, Q ∴ P</td><td data-id="1227">Affirming the Consequent</td><td data-id="1228" class="text-red-400 font-bold">❌ Invalid</td></tr>
+          <tr data-id="1229"><td data-id="1230" class="font-mono">P→Q, ¬P ∴ ¬Q</td><td data-id="1231">Denying the Antecedent</td><td data-id="1232" class="text-red-400 font-bold">❌ Invalid</td></tr>
+          <tr data-id="1233"><td data-id="1234" class="font-mono">P∨Q, ¬P ∴ Q</td><td data-id="1235">Disjunctive Syllogism</td><td data-id="1236" class="text-green-400 font-bold">✅ Valid</td></tr>
+          <tr data-id="1237"><td data-id="1238" class="font-mono">P→Q, Q→R ∴ P→R</td><td data-id="1239">Hypothetical Syllogism</td><td data-id="1240" class="text-green-400 font-bold">✅ Valid</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+  </div>
+  <footer data-id="1241" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1
+    
+  </footer>
+</div>
+
+<!-- ==================== VIEW 4: PROOF TEMPLATES ==================== -->
+<div data-id="1242" class="view-panel" id="view-4">
+  <div data-id="1243" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="1244" class="mb-8">
+      <span data-id="1245" class="badge-gold mb-3 inline-block">Module 4</span>
+      <h1 data-id="1246" id="m4-header-s9t0" class="text-2xl md:text-3xl font-bold text-gold">Proof Templates</h1>
+      <p data-id="1247" class="text-teal font-medium mt-1">Four proof strategies with skeletons and worked examples</p>
+    </header>
+
+    <section data-id="1248" class="content-card" id="m4-intro-u1v2">
+      <h2 data-id="1249" class="text-lg font-semibold text-gold mb-3">What Is a Proof?</h2>
+      <p data-id="1250" class="leading-relaxed mb-4">A formal proof is a finite, ordered sequence of lines where every line is either a premise (given) or follows from earlier lines via a named inference rule. The final line is the conclusion to be established. A proof doesn't argue — it <em data-id="1251">demonstrates</em>.</p>
+      <h3 data-id="1252" class="text-base font-semibold text-gold mb-2">Proof Anatomy</h3>
+      <div data-id="1253" class="overflow-x-auto mb-3">
+        <table data-id="1254" class="truth-table" style="max-width:500px"><thead data-id="1255"><tr data-id="1256"><th data-id="1257">Line #</th><th data-id="1258">Statement</th><th data-id="1259">Justification</th></tr></thead><tbody data-id="1260">
+          <tr data-id="1261"><td data-id="1262">1.</td><td data-id="1263" class="font-mono text-left">P → Q</td><td data-id="1264" class="text-left">Premise</td></tr>
+          <tr data-id="1265"><td data-id="1266">2.</td><td data-id="1267" class="font-mono text-left">P</td><td data-id="1268" class="text-left">Premise</td></tr>
+          <tr data-id="1269"><td data-id="1270">3.</td><td data-id="1271" class="font-mono text-left">Q</td><td data-id="1272" class="text-left">Modus Ponens (1, 2)</td></tr>
+        </tbody></table>
+      </div>
+      <p data-id="1273" class="text-sm text-txt-muted">Premises first, labeled "Premise." Justification names the rule + line numbers. Goal is always the last line.</p>
+    </section>
+
+    <!-- Template 1: Direct Proof -->
+    <section data-id="1274" class="content-card" id="m4-direct-w3x4" style="border-left: 4px solid #4db6ac;">
+      <div data-id="1275" class="flex items-center gap-3 mb-3"><span data-id="1276" class="badge-gold" style="background:linear-gradient(135deg,#4db6ac,#357f76)">Direct</span><h2 data-id="1277" class="text-lg font-bold">Template 1 — Direct Proof</h2></div>
+      <p data-id="1278" class="text-txt-muted text-sm mb-3"><strong data-id="1279">When to use:</strong> The conclusion is a straightforward consequence of the premises.</p>
+      <p data-id="1280" class="mb-3"><strong data-id="1281">Strategy:</strong> Apply inference rules step by step, moving forward from premises toward the conclusion.</p>
+      <h3 data-id="1282" class="text-sm font-semibold text-gold mb-2">Skeleton</h3>
+      <div data-id="1283" class="proof-box mb-4"><pre data-id="1284">Goal: Show [CONCLUSION]
+1. [Premise 1]           Premise
+2. [Premise 2]           Premise
+n. [Intermediate]        [Rule] (refs)
+z. [CONCLUSION]          [Rule] (refs)  ∎</pre></div>
+      <h3 data-id="1285" class="text-sm font-semibold text-gold mb-2">Worked Example</h3>
+      <p data-id="1286" class="text-sm mb-2">Given: P → Q, Q → R, P &nbsp;|&nbsp; Prove: R</p>
+      <div data-id="1287" class="proof-box mb-3"><pre data-id="1288">1. P → Q      Premise
+2. Q → R      Premise
+3. P          Premise
+4. Q          Modus Ponens (1, 3)
+5. R          Modus Ponens (2, 4)  ∎</pre></div>
+      <p data-id="1289" class="text-sm mb-2"><strong data-id="1290">Narrative:</strong> We're given P→Q and Q→R. Also given P. Applying MP twice chains us from P all the way to R.</p>
+      <div data-id="1291" class="mythic">Following a lit path through the dark — each torch lights the next; walk the chain to the end.</div>
+    </section>
+
+    <!-- Template 2: Contradiction -->
+    <section data-id="1292" class="content-card" id="m4-contra-y5z6" style="border-left: 4px solid #e74c3c;">
+      <div data-id="1293" class="flex items-center gap-3 mb-3"><span data-id="1294" class="badge-gold" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">Contradiction</span><h2 data-id="1295" class="text-lg font-bold">Template 2 — Proof by Contradiction</h2></div>
+      <p data-id="1296" class="text-teal text-sm italic mb-3">Reductio ad Absurdum</p>
+      <p data-id="1297" class="text-txt-muted text-sm mb-3"><strong data-id="1298">When to use:</strong> The conclusion is hard to reach directly, or is a negation. Assume the opposite — watch it collapse.</p>
+      <ol data-id="1299" class="list-decimal list-inside space-y-1 text-sm mb-4">
+        <li data-id="1300">Assume ¬C (negation of conclusion) as a temporary premise</li>
+        <li data-id="1301">Derive a contradiction — X ∧ ¬X</li>
+        <li data-id="1302">Since the assumption led to impossibility, it must be false</li>
+        <li data-id="1303">Therefore C is true</li>
+      </ol>
+      <h3 data-id="1304" class="text-sm font-semibold text-gold mb-2">Skeleton</h3>
+      <div data-id="1305" class="proof-box mb-4"><pre data-id="1306">Goal: Show [C]
+1. [Premises]              Premise
+k. ¬C                      Assumption for Contradiction
+n. X                       [Rule] (refs)
+n+1. ¬X                    [Rule] (refs)
+n+2. X ∧ ¬X                Conjunction (n, n+1) ← Contradiction
+n+3. C                     Reductio ad Absurdum (k–n+2)  ∎</pre></div>
+      <h3 data-id="1307" class="text-sm font-semibold text-gold mb-2">Worked Example</h3>
+      <p data-id="1308" class="text-sm mb-2">Given: P ∨ Q, ¬Q &nbsp;|&nbsp; Prove: P</p>
+      <div data-id="1309" class="proof-box mb-3"><pre data-id="1310">1. P ∨ Q      Premise
+2. ¬Q         Premise
+3. ¬P         Assumption for Contradiction
+4. Q          Disjunctive Syllogism (1, 3)
+5. Q ∧ ¬Q     Conjunction (4, 2)  ← Contradiction
+6. P          Reductio ad Absurdum (3–5)  ∎</pre></div>
+      <div data-id="1311" class="mythic">The locked-room argument. You assume the killer escaped through the window — but the window was sealed from the inside. The assumption destroys itself.</div>
+      <div data-id="1312" class="note-box note-gold mt-3"><strong data-id="1313">💡 Best for:</strong> Proving negative claims, or when every direct path is blocked.</div>
+    </section>
+
+    <!-- Template 3: Contrapositive -->
+    <section data-id="1314" class="content-card" id="m4-contrap-a7b8" style="border-left: 4px solid #9b59b6;">
+      <div data-id="1315" class="flex items-center gap-3 mb-3"><span data-id="1316" class="badge-gold" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)">Contrapositive</span><h2 data-id="1317" class="text-lg font-bold">Template 3 — Proof by Contrapositive</h2></div>
+      <p data-id="1318" class="text-txt-muted text-sm mb-3"><strong data-id="1319">When to use:</strong> Conclusion is P → Q and proving ¬Q → ¬P is easier. They are logically equivalent.</p>
+      <div data-id="1320" class="proof-box mb-4"><pre data-id="1321">Equivalence: P → Q  ≡  ¬Q → ¬P   (Contraposition)</pre></div>
+      <h3 data-id="1322" class="text-sm font-semibold text-gold mb-2">Skeleton</h3>
+      <div data-id="1323" class="proof-box mb-4"><pre data-id="1324">Goal: Show [P → Q]
+Equivalent goal: Show [¬Q → ¬P]
+1. [Premises]               Premise
+k. ¬Q                       Assumption (conditional proof)
+n. ¬P                       [Rule] (refs)
+n+1. ¬Q → ¬P                Conditional Proof (k–n)
+n+2. P → Q                  Contraposition (n+1)  ∎</pre></div>
+      <h3 data-id="1325" class="text-sm font-semibold text-gold mb-2">Worked Example</h3>
+      <p data-id="1326" class="text-sm mb-2">Given: P → Q, P → ¬Q &nbsp;|&nbsp; Prove: ¬P</p>
+      <div data-id="1327" class="proof-box mb-3"><pre data-id="1328">1. P → Q       Premise
+2. P → ¬Q      Premise
+3. ¬¬P         Assumption for Contradiction
+4. P           Double Negation (3)
+5. Q           Modus Ponens (1, 4)
+6. ¬Q          Modus Ponens (2, 4)
+7. Q ∧ ¬Q      Conjunction (5, 6)  ← Contradiction
+8. ¬P          Reductio ad Absurdum (3–7)  ∎</pre></div>
+      <div data-id="1329" class="mythic">Rather than proving the sword can cut the stone, you prove: if the stone were uncut, the sword could not exist as described. Since the sword exists, the stone was cut.</div>
+    </section>
+
+    <!-- Template 4: Cases -->
+    <section data-id="1330" class="content-card" id="m4-cases-c9d0" style="border-left: 4px solid #c9a84c;">
+      <div data-id="1331" class="flex items-center gap-3 mb-3"><span data-id="1332" class="badge-gold">Cases</span><h2 data-id="1333" class="text-lg font-bold">Template 4 — Proof by Cases (Exhaustion)</h2></div>
+      <p data-id="1334" class="text-txt-muted text-sm mb-3"><strong data-id="1335">When to use:</strong> Premises contain a disjunction P ∨ Q. Prove the conclusion holds in every case.</p>
+      <ol data-id="1336" class="list-decimal list-inside space-y-1 text-sm mb-4">
+        <li data-id="1337">Identify disjunction P ∨ Q in the premises</li>
+        <li data-id="1338">Case 1: Assume P — derive C</li>
+        <li data-id="1339">Case 2: Assume Q — derive C</li>
+        <li data-id="1340">Since all cases lead to C, and one must hold, C is established</li>
+      </ol>
+      <h3 data-id="1341" class="text-sm font-semibold text-gold mb-2">Skeleton</h3>
+      <div data-id="1342" class="proof-box mb-4"><pre data-id="1343">Goal: Show [C]
+1. P ∨ Q                       Premise
+─── Case 1: Assume P ───────────────
+k.   P                         Assumption (Case 1)
+m.   C                         [Rules]
+─── Case 2: Assume Q ───────────────
+m+1. Q                         Assumption (Case 2)
+n.   C                         [Rules]
+─────────────────────────────────────
+n+1. C                         Proof by Cases (1, k–m, m+1–n)  ∎</pre></div>
+      <h3 data-id="1344" class="text-sm font-semibold text-gold mb-2">Worked Example</h3>
+      <p data-id="1345" class="text-sm mb-2">Given: P ∨ Q, P → R, Q → R &nbsp;|&nbsp; Prove: R</p>
+      <div data-id="1346" class="proof-box mb-3"><pre data-id="1347">1. P ∨ Q      Premise
+2. P → R      Premise
+3. Q → R      Premise
+─── Case 1: P ─────────────
+4. P          Assumption
+5. R          Modus Ponens (2, 4)
+─── Case 2: Q ─────────────
+6. Q          Assumption
+7. R          Modus Ponens (3, 6)
+────────────────────────────
+8. R          Proof by Cases (1, 4–5, 6–7)  ∎</pre></div>
+      <div data-id="1348" class="mythic">Every road leads to the capital. You don't know which road the traveler took — but it doesn't matter. Either way, they arrive.</div>
+    </section>
+
+    <!-- Decision Guide -->
+    <section data-id="1349" class="content-card" id="m4-decision-e1f2">
+      <h2 data-id="1350" class="text-lg font-semibold text-gold mb-4">Choosing a Strategy — Decision Guide</h2>
+      <div data-id="1351" class="space-y-3">
+        <div data-id="1352" class="dt-node">
+          <p data-id="1353" class="font-semibold text-teal mb-2">What does your CONCLUSION look like?</p>
+          <div data-id="1354" class="ml-4 space-y-2 mt-3">
+            <div data-id="1355" class="dt-node">
+              <p data-id="1356" class="text-sm"><strong data-id="1357" class="text-gold">→ A simple statement</strong> (P, Q, R…)</p>
+              <div data-id="1358" class="ml-4 mt-2 space-y-2">
+                <div data-id="1359" class="dt-node dt-answer"><p data-id="1360" class="text-sm">Clear path from premises? → <strong data-id="1361" class="text-teal">DIRECT PROOF</strong></p></div>
+                <div data-id="1362" class="dt-node dt-answer"><p data-id="1363" class="text-sm">Negation or hard to build? → <strong data-id="1364" style="color:#e74c3c">CONTRADICTION</strong></p></div>
+              </div>
+            </div>
+            <div data-id="1365" class="dt-node">
+              <p data-id="1366" class="text-sm"><strong data-id="1367" class="text-gold">→ A conditional</strong> (P → Q)?</p>
+              <div data-id="1368" class="ml-4 mt-2 space-y-2">
+                <div data-id="1369" class="dt-node dt-answer"><p data-id="1370" class="text-sm">Easier to prove ¬Q → ¬P? → <strong data-id="1371" style="color:#9b59b6">CONTRAPOSITIVE</strong></p></div>
+                <div data-id="1372" class="dt-node dt-answer"><p data-id="1373" class="text-sm">Straightforward chain? → <strong data-id="1374" class="text-teal">DIRECT PROOF</strong></p></div>
+              </div>
+            </div>
+            <div data-id="1375" class="dt-node">
+              <p data-id="1376" class="text-sm"><strong data-id="1377" class="text-gold">→ A negation</strong> (¬P)?</p>
+              <div data-id="1378" class="ml-4 mt-2"><div data-id="1379" class="dt-node dt-answer"><p data-id="1380" class="text-sm">Assume P, find contradiction → <strong data-id="1381" style="color:#e74c3c">CONTRADICTION</strong></p></div></div>
+            </div>
+            <div data-id="1382" class="dt-node">
+              <p data-id="1383" class="text-sm"><strong data-id="1384" class="text-gold">→ Premises contain a disjunction</strong> (P ∨ Q)?</p>
+              <div data-id="1385" class="ml-4 mt-2"><div data-id="1386" class="dt-node dt-answer"><p data-id="1387" class="text-sm">Prove conclusion in each case → <strong data-id="1388" class="text-gold">PROOF BY CASES</strong></p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Common Proof Errors -->
+    <section data-id="1389" class="content-card" id="m4-errors-g3h4">
+      <h2 data-id="1390" class="text-lg font-semibold text-gold mb-3">Common Proof Errors</h2>
+      <div data-id="1391" class="overflow-x-auto">
+        <table data-id="1392" class="ref-table"><thead data-id="1393"><tr data-id="1394"><th data-id="1395">Error</th><th data-id="1396">Description</th><th data-id="1397">Fix</th></tr></thead><tbody data-id="1398">
+          <tr data-id="1399"><td data-id="1400" class="text-red-400 font-semibold">Circular reasoning</td><td data-id="1401">Using the conclusion as a premise</td><td data-id="1402">Never let the goal appear as a justification</td></tr>
+          <tr data-id="1403"><td data-id="1404" class="text-red-400 font-semibold">Missing justification</td><td data-id="1405">Writing a line without citing a rule</td><td data-id="1406">Every non-premise line needs a rule + line numbers</td></tr>
+          <tr data-id="1407"><td data-id="1408" class="text-red-400 font-semibold">Invalid rule application</td><td data-id="1409">Forms don't match the rule</td><td data-id="1410">Check syntactic form exactly</td></tr>
+          <tr data-id="1411"><td data-id="1412" class="text-red-400 font-semibold">Undischarged assumption</td><td data-id="1413">Opening a sub-proof but never closing it</td><td data-id="1414">Every assumption must be closed with the rule that discharged it</td></tr>
+          <tr data-id="1415"><td data-id="1416" class="text-red-400 font-semibold">Affirming the consequent</td><td data-id="1417">Treating Q, P→Q as sufficient for P</td><td data-id="1418">Invalid — see Module 3</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Proof Notation Reference -->
+    <section data-id="1419" class="content-card" id="m4-notation-i5j6">
+      <h2 data-id="1420" class="text-lg font-semibold text-gold mb-3">Proof Notation Reference</h2>
+      <div data-id="1421" class="overflow-x-auto">
+        <table data-id="1422" class="ref-table"><thead data-id="1423"><tr data-id="1424"><th data-id="1425">Symbol</th><th data-id="1426">Meaning</th></tr></thead><tbody data-id="1427">
+          <tr data-id="1428"><td data-id="1429" class="font-mono text-gold text-lg">∎ / QED</td><td data-id="1430">End of proof — quod erat demonstrandum (what was to be shown)</td></tr>
+          <tr data-id="1431"><td data-id="1432" class="font-mono text-gold text-lg">∴</td><td data-id="1433">Therefore</td></tr>
+          <tr data-id="1434"><td data-id="1435" class="font-mono text-gold text-lg">∵</td><td data-id="1436">Because / Since</td></tr>
+          <tr data-id="1437"><td data-id="1438" class="font-mono text-gold text-lg">[k–n]</td><td data-id="1439">Lines k through n form a sub-proof</td></tr>
+          <tr data-id="1440"><td data-id="1441" class="font-mono text-gold text-lg">Assume…</td><td data-id="1442">Opens a temporary assumption</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+  </div>
+  <footer data-id="1443" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1</footer>
+</div>
+
+<!-- ==================== VIEW 5: FUZZY & PROBABILISTIC LOGIC ==================== -->
+<div data-id="1444" class="view-panel" id="view-5">
+  <div data-id="1445" class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
+    <header data-id="1446" class="mb-8">
+      <span data-id="1447" class="badge-gold mb-3 inline-block">Module 5</span>
+      <h1 data-id="1448" id="m5-header-k7l8" class="text-2xl md:text-3xl font-bold text-gold">Fuzzy &amp; Probabilistic Logic</h1>
+      <p data-id="1449" class="text-teal font-medium mt-1">Degrees of truth, linguistic hedges, and probabilistic reasoning</p>
+    </header>
+
+    <section data-id="1450" class="content-card" id="m5-problem-m9n0">
+      <h2 data-id="1451" class="text-lg font-semibold text-gold mb-3">The Problem with Binary Logic</h2>
+      <p data-id="1452" class="leading-relaxed">Classical (Boolean) logic is binary — every statement is TRUE (1) or FALSE (0). But natural language is not binary. "The water is hot." "She is tall." "It will probably rain." None of these are cleanly TRUE or FALSE — they live on a spectrum. Fuzzy logic and probabilistic logic are the formal tools built for this reality.</p>
+    </section>
+
+    <section data-id="1453" class="content-card" id="m5-twosys-o1p2">
+      <h2 data-id="1454" class="text-lg font-semibold text-gold mb-3">Two Distinct Systems</h2>
+      <div data-id="1455" class="overflow-x-auto">
+        <table data-id="1456" class="ref-table"><thead data-id="1457"><tr data-id="1458"><th data-id="1459">Feature</th><th data-id="1460">Fuzzy Logic</th><th data-id="1461">Probabilistic Logic</th></tr></thead><tbody data-id="1462">
+          <tr data-id="1463"><td data-id="1464" class="font-semibold">Core question</td><td data-id="1465">To what degree is X true?</td><td data-id="1466">How likely is X to be true?</td></tr>
+          <tr data-id="1467"><td data-id="1468" class="font-semibold">Truth value</td><td data-id="1469">Degree in [0, 1]</td><td data-id="1470">Probability in [0, 1]</td></tr>
+          <tr data-id="1471"><td data-id="1472" class="font-semibold">Uncertainty source</td><td data-id="1473">Vagueness in meaning</td><td data-id="1474">Incomplete information</td></tr>
+          <tr data-id="1475"><td data-id="1476" class="font-semibold">"Hot water" example</td><td data-id="1477">Water is 0.7 hot (gradual membership)</td><td data-id="1478">70% chance water is hot (yes/no but unknown)</td></tr>
+          <tr data-id="1479"><td data-id="1480" class="font-semibold">Negation</td><td data-id="1481" class="font-mono">¬P = 1 − μ(P)</td><td data-id="1482" class="font-mono">P(¬A) = 1 − P(A)</td></tr>
+          <tr data-id="1483"><td data-id="1484" class="font-semibold">Primary use</td><td data-id="1485">Linguistics, AI, control systems</td><td data-id="1486">Statistics, inference, decision-making</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="1487" class="note-box note-teal mt-4"><strong data-id="1488">Key distinction:</strong> Fuzzy logic says the statement itself has a partial truth value. Probabilistic logic says the statement is still fully TRUE or FALSE — we just don't know which, and express uncertainty as odds.</div>
+    </section>
+
+    <!-- PART 1: FUZZY LOGIC -->
+    <div data-id="1489" class="flex items-center gap-4 my-8"><div data-id="1490" class="flex-1 h-px bg-border"></div><span data-id="1491" class="text-gold font-bold text-sm tracking-wider">PART 1 · FUZZY LOGIC</span><div data-id="1492" class="flex-1 h-px bg-border"></div></div>
+
+    <section data-id="1493" class="content-card" id="m5-continuum-q3r4">
+      <h2 data-id="1494" class="text-lg font-semibold text-gold mb-3">Truth as a Continuum</h2>
+      <div data-id="1495" class="gradient-truth mb-4"></div>
+      <div data-id="1496" class="flex justify-between text-xs font-mono mb-4 px-1">
+        <span data-id="1497" class="text-red-400">0.0 — FALSE</span>
+        <span data-id="1498" class="text-yellow-400">0.5 — VAGUE</span>
+        <span data-id="1499" class="text-green-400">1.0 — TRUE</span>
+      </div>
+      <div data-id="1500" class="overflow-x-auto">
+        <table data-id="1501" class="ref-table"><thead data-id="1502"><tr data-id="1503"><th data-id="1504">Value</th><th data-id="1505">Interpretation</th></tr></thead><tbody data-id="1506">
+          <tr data-id="1507"><td data-id="1508" class="font-mono text-green-400">1.0</td><td data-id="1509">Completely TRUE</td></tr>
+          <tr data-id="1510"><td data-id="1511" class="font-mono text-green-300">0.75</td><td data-id="1512">Mostly true</td></tr>
+          <tr data-id="1513"><td data-id="1514" class="font-mono text-yellow-400">0.5</td><td data-id="1515">Maximum vagueness — neither true nor false</td></tr>
+          <tr data-id="1516"><td data-id="1517" class="font-mono text-red-300">0.25</td><td data-id="1518">Mostly false</td></tr>
+          <tr data-id="1519"><td data-id="1520" class="font-mono text-red-400">0.0</td><td data-id="1521">Completely FALSE</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <section data-id="1522" class="content-card" id="m5-fuzzyops-s5t6">
+      <h2 data-id="1523" class="text-lg font-semibold text-gold mb-3">Fuzzy Operators</h2>
+      <p data-id="1524" class="text-sm text-txt-muted mb-3">Let μ(P) denote the fuzzy truth value of P.</p>
+      <div data-id="1525" class="overflow-x-auto mb-4">
+        <table data-id="1526" class="ref-table"><thead data-id="1527"><tr data-id="1528"><th data-id="1529">Operator</th><th data-id="1530">Formula</th><th data-id="1531">Notes</th></tr></thead><tbody data-id="1532">
+          <tr data-id="1533"><td data-id="1534" class="font-semibold">NOT</td><td data-id="1535" class="font-mono">μ(¬P) = 1 − μ(P)</td><td data-id="1536">Mirrors across 0.5</td></tr>
+          <tr data-id="1537"><td data-id="1538" class="font-semibold">AND</td><td data-id="1539" class="font-mono">μ(P ∧ Q) = min(μ(P), μ(Q))</td><td data-id="1540">Truth limited by the weakest conjunct</td></tr>
+          <tr data-id="1541"><td data-id="1542" class="font-semibold">OR</td><td data-id="1543" class="font-mono">μ(P ∨ Q) = max(μ(P), μ(Q))</td><td data-id="1544">Truth elevated to the strongest disjunct</td></tr>
+          <tr data-id="1545"><td data-id="1546" class="font-semibold">IMPLIES</td><td data-id="1547" class="font-mono">μ(P → Q) = min(1, 1 − μ(P) + μ(Q))</td><td data-id="1548">Łukasiewicz implication</td></tr>
+        </tbody></table>
+      </div>
+      <div data-id="1549" class="code-block">
+P = "The forge is hot"    — μ(P) = 0.8
+Q = "The metal is soft"   — μ(Q) = 0.6
+
+P ∧ Q: min(0.8, 0.6) = <span data-id="1550" class="text-gold">0.6</span>
+P ∨ Q: max(0.8, 0.6) = <span data-id="1551" class="text-gold">0.8</span>
+¬P:    1 − 0.8       = <span data-id="1552" class="text-gold">0.2</span>
+      </div>
+    </section>
+
+    <section data-id="1553" class="content-card" id="m5-membership-u7v8">
+      <h2 data-id="1554" class="text-lg font-semibold text-gold mb-3">Fuzzy Sets and Membership Functions</h2>
+      <p data-id="1555" class="mb-4">In classical set theory, x either belongs or doesn't. In fuzzy set theory, membership is graded: μ<sub data-id="1556">A</sub>(x) ∈ [0, 1].</p>
+      <h3 data-id="1557" class="text-sm font-semibold text-gold mb-3">Fuzzy Set "Tall"</h3>
+      <div data-id="1558" class="space-y-2 mb-4">
+        <div data-id="1559" class="flex items-center gap-3"><span data-id="1560" class="font-mono text-sm w-16">150 cm</span><span data-id="1561" class="font-mono text-sm w-8 text-txt-muted">0.0</span><div data-id="1562" class="flex-1 bg-bg-inset rounded h-4 overflow-hidden"><div data-id="1563" class="fuzzy-bar bg-red-500/40" style="width:0%"></div></div></div>
+        <div data-id="1564" class="flex items-center gap-3"><span data-id="1565" class="font-mono text-sm w-16">165 cm</span><span data-id="1566" class="font-mono text-sm w-8 text-txt-muted">0.3</span><div data-id="1567" class="flex-1 bg-bg-inset rounded h-4 overflow-hidden"><div data-id="1568" class="fuzzy-bar bg-orange-500/60" style="width:30%"></div></div></div>
+        <div data-id="1569" class="flex items-center gap-3"><span data-id="1570" class="font-mono text-sm w-16">175 cm</span><span data-id="1571" class="font-mono text-sm w-8 text-txt-muted">0.6</span><div data-id="1572" class="flex-1 bg-bg-inset rounded h-4 overflow-hidden"><div data-id="1573" class="fuzzy-bar bg-yellow-500/60" style="width:60%"></div></div></div>
+        <div data-id="1574" class="flex items-center gap-3"><span data-id="1575" class="font-mono text-sm w-16">185 cm</span><span data-id="1576" class="font-mono text-sm w-8 text-txt-muted">0.9</span><div data-id="1577" class="flex-1 bg-bg-inset rounded h-4 overflow-hidden"><div data-id="1578" class="fuzzy-bar bg-green-400/70" style="width:90%"></div></div></div>
+        <div data-id="1579" class="flex items-center gap-3"><span data-id="1580" class="font-mono text-sm w-16">195 cm</span><span data-id="1581" class="font-mono text-sm w-8 text-gold">1.0</span><div data-id="1582" class="flex-1 bg-bg-inset rounded h-4 overflow-hidden"><div data-id="1583" class="fuzzy-bar bg-green-400" style="width:100%"></div></div></div>
+      </div>
+      <div data-id="1584" class="mythic">Classical set membership is a castle gate — you're either inside or outside. Fuzzy membership is fog rolling in from the sea — you can be mostly inside, barely outside, or exactly at the threshold.</div>
+    </section>
+
+    <section data-id="1585" class="content-card" id="m5-hedges-w9x0">
+      <h2 data-id="1586" class="text-lg font-semibold text-gold mb-3">Linguistic Hedges</h2>
+      <p data-id="1587" class="text-sm text-txt-muted mb-3">Fuzzy logic formalizes how words like "very" and "slightly" modify truth values. These are called <em data-id="1588">hedges</em>.</p>
+      <div data-id="1589" class="overflow-x-auto mb-4">
+        <table data-id="1590" class="ref-table"><thead data-id="1591"><tr data-id="1592"><th data-id="1593">Hedge</th><th data-id="1594">Formula</th><th data-id="1595">Effect</th><th data-id="1596">Example (μ = 0.6)</th></tr></thead><tbody data-id="1597">
+          <tr data-id="1598"><td data-id="1599" class="font-semibold">very</td><td data-id="1600" class="font-mono">μ(P)²</td><td data-id="1601">Narrows and intensifies</td><td data-id="1602" class="font-mono">0.6² = 0.36</td></tr>
+          <tr data-id="1603"><td data-id="1604" class="font-semibold">fairly / quite</td><td data-id="1605" class="font-mono">√μ(P)</td><td data-id="1606">Softens</td><td data-id="1607" class="font-mono">√0.6 ≈ 0.77</td></tr>
+          <tr data-id="1608"><td data-id="1609" class="font-semibold">slightly</td><td data-id="1610" class="font-mono">μ(P)^(1/3)</td><td data-id="1611">Weakens significantly</td><td data-id="1612" class="font-mono">0.6^0.33 ≈ 0.84</td></tr>
+          <tr data-id="1613"><td data-id="1614" class="font-semibold">not</td><td data-id="1615" class="font-mono">1 − μ(P)</td><td data-id="1616">Inverts</td><td data-id="1617" class="font-mono">1 − 0.6 = 0.4</td></tr>
+        </tbody></table>
+      </div>
+
+      <!-- Interactive Hedge Calculator -->
+      <div data-id="1618" class="bg-bg-inset border border-border rounded-lg p-4 mb-4">
+        <h3 data-id="1619" class="text-sm font-bold text-gold mb-3 flex items-center gap-2"><i data-id="1620" data-lucide="calculator" class="w-4 h-4"></i> Interactive Hedge Calculator</h3>
+        <div data-id="1621" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+          <label data-id="1622" class="text-sm font-medium">μ value (0.0 – 1.0):</label>
+          <input data-id="1623" id="hedge-input-y1z2" type="number" min="0" max="1" step="0.01" value="0.6" class="calc-input" style="max-width:120px" />
+        </div>
+        <div data-id="1624" id="hedge-results-a3b4" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        </div>
+      </div>
+
+      <div data-id="1625" class="note-box note-teal"><strong data-id="1626">💡 Insight:</strong> "Very" is not just emphasis — it is a mathematical contraction of the fuzzy set. "Very tall" is a strict subset of "tall."</div>
+    </section>
+
+    <!-- PART 2: PROBABILISTIC LOGIC -->
+    <div data-id="1627" class="flex items-center gap-4 my-8"><div data-id="1628" class="flex-1 h-px bg-border"></div><span data-id="1629" class="text-gold font-bold text-sm tracking-wider">PART 2 · PROBABILISTIC LOGIC</span><div data-id="1630" class="flex-1 h-px bg-border"></div></div>
+
+    <section data-id="1631" class="content-card" id="m5-axioms-c5d6">
+      <h2 data-id="1632" class="text-lg font-semibold text-gold mb-3">Core Axioms (Kolmogorov)</h2>
+      <div data-id="1633" class="overflow-x-auto mb-4">
+        <table data-id="1634" class="ref-table"><thead data-id="1635"><tr data-id="1636"><th data-id="1637">Axiom</th><th data-id="1638">Statement</th></tr></thead><tbody data-id="1639">
+          <tr data-id="1640"><td data-id="1641" class="font-semibold">Non-negativity</td><td data-id="1642" class="font-mono">P(A) ≥ 0 for all A</td></tr>
+          <tr data-id="1643"><td data-id="1644" class="font-semibold">Normalization</td><td data-id="1645" class="font-mono">P(Ω) = 1 — total probability across all outcomes = 1</td></tr>
+          <tr data-id="1646"><td data-id="1647" class="font-semibold">Additivity</td><td data-id="1648">If A and B are mutually exclusive: <span data-id="1649" class="font-mono">P(A ∨ B) = P(A) + P(B)</span></td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <section data-id="1650" class="content-card" id="m5-probrules-e7f8">
+      <h2 data-id="1651" class="text-lg font-semibold text-gold mb-3">Basic Probability Rules</h2>
+      <div data-id="1652" class="overflow-x-auto">
+        <table data-id="1653" class="ref-table"><thead data-id="1654"><tr data-id="1655"><th data-id="1656">Rule</th><th data-id="1657">Formula</th></tr></thead><tbody data-id="1658">
+          <tr data-id="1659"><td data-id="1660" class="font-semibold">Complement</td><td data-id="1661" class="font-mono">P(¬A) = 1 − P(A)</td></tr>
+          <tr data-id="1662"><td data-id="1663" class="font-semibold">General OR</td><td data-id="1664" class="font-mono">P(A ∨ B) = P(A) + P(B) − P(A ∧ B)</td></tr>
+          <tr data-id="1665"><td data-id="1666" class="font-semibold">AND (independent)</td><td data-id="1667" class="font-mono">P(A ∧ B) = P(A) × P(B)</td></tr>
+          <tr data-id="1668"><td data-id="1669" class="font-semibold">Conditional</td><td data-id="1670" class="font-mono">P(A | B) = P(A ∧ B) / P(B)</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Bayes' Theorem -->
+    <section data-id="1671" class="content-card featured" id="m5-bayes-g9h0">
+      <h2 data-id="1672" class="text-xl font-bold text-gold mb-4">★ Bayes' Theorem</h2>
+      <div data-id="1673" class="bg-bg-inset border border-gold rounded-lg p-6 mb-4 text-center">
+        <p data-id="1674" class="font-mono text-lg md:text-2xl text-gold">P(A | B) = [ P(B | A) × P(A) ] / P(B)</p>
+      </div>
+      <div data-id="1675" class="overflow-x-auto mb-4">
+        <table data-id="1676" class="ref-table"><thead data-id="1677"><tr data-id="1678"><th data-id="1679">Term</th><th data-id="1680">Name</th><th data-id="1681">Meaning</th></tr></thead><tbody data-id="1682">
+          <tr data-id="1683"><td data-id="1684" class="font-mono text-gold">P(A)</td><td data-id="1685">Prior</td><td data-id="1686">Belief in A before seeing B</td></tr>
+          <tr data-id="1687"><td data-id="1688" class="font-mono text-gold">P(B|A)</td><td data-id="1689">Likelihood</td><td data-id="1690">How probable is B if A is true?</td></tr>
+          <tr data-id="1691"><td data-id="1692" class="font-mono text-gold">P(B)</td><td data-id="1693">Marginal</td><td data-id="1694">Overall probability of observing B</td></tr>
+          <tr data-id="1695"><td data-id="1696" class="font-mono text-gold">P(A|B)</td><td data-id="1697">Posterior</td><td data-id="1698">Updated belief in A after seeing B</td></tr>
+        </tbody></table>
+      </div>
+
+      <h3 data-id="1699" class="text-base font-semibold text-gold mb-3">Worked Example — The Base Rate Trap</h3>
+      <div data-id="1700" class="code-block mb-4">
+A disease affects 1% of the population. A test is 95% accurate 
+(true positive rate). You test positive. What is the real 
+probability you have the disease?
+
+P(Disease)              = 0.01
+P(Positive | Disease)   = 0.95
+P(Positive | No Disease)= 0.05
+
+P(Positive) = (0.95 × 0.01) + (0.05 × 0.99) = <span data-id="1701" class="text-gold">0.059</span>
+
+P(Disease | Positive) = (0.95 × 0.01) / 0.059 ≈ <span data-id="1702" class="text-gold font-bold">16.1%</span>
+
+Despite a 95% accurate test, a positive result means only ~16% 
+chance of actually being sick — because the disease is rare. 
+<span data-id="1703" class="text-red-400">The prior crushes the likelihood.</span>
+      </div>
+
+      <!-- Interactive Bayes Calculator -->
+      <div data-id="1704" class="bg-bg-inset border border-border rounded-lg p-4 mb-4">
+        <h3 data-id="1705" class="text-sm font-bold text-gold mb-3 flex items-center gap-2"><i data-id="1706" data-lucide="calculator" class="w-4 h-4"></i> Interactive Bayes Calculator</h3>
+        <div data-id="1707" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <div data-id="1708">
+            <label data-id="1709" class="text-xs text-txt-muted block mb-1">Prior P(A)</label>
+            <input data-id="1710" id="bayes-prior-i1j2" type="number" min="0" max="1" step="0.01" value="0.01" class="calc-input" />
+          </div>
+          <div data-id="1711">
+            <label data-id="1712" class="text-xs text-txt-muted block mb-1">Likelihood P(B|A)</label>
+            <input data-id="1713" id="bayes-like-k3l4" type="number" min="0" max="1" step="0.01" value="0.95" class="calc-input" />
+          </div>
+          <div data-id="1714">
+            <label data-id="1715" class="text-xs text-txt-muted block mb-1">False positive P(B|¬A)</label>
+            <input data-id="1716" id="bayes-fp-m5n6" type="number" min="0" max="1" step="0.01" value="0.05" class="calc-input" />
+          </div>
+        </div>
+        <div data-id="1717" id="bayes-result-o7p8" class="p-3 rounded-lg bg-bg border border-border">
+          <p data-id="1718" class="text-sm text-txt-muted">Enter values and see the posterior probability.</p>
+        </div>
+      </div>
+
+      <div data-id="1719" class="mythic">The oracle's vision. Bayes tells you not just what the oracle saw — but how much to update your belief given how often the oracle is right, and how rare the thing it predicted really is.</div>
+    </section>
+
+    <!-- Probabilistic Quantifiers -->
+    <section data-id="1720" class="content-card" id="m5-probquant-q9r0">
+      <h2 data-id="1721" class="text-lg font-semibold text-gold mb-3">Probabilistic Quantifiers — Filling the Fuzzy Middle</h2>
+      <div data-id="1722" class="overflow-x-auto">
+        <table data-id="1723" class="ref-table"><thead data-id="1724"><tr data-id="1725"><th data-id="1726">English Word</th><th data-id="1727">Approx. Probability Band</th><th data-id="1728">Notes</th></tr></thead><tbody data-id="1729">
+          <tr data-id="1730"><td data-id="1731">Certainly / Definitely</td><td data-id="1732" class="font-mono text-green-400">≈ 0.95–1.0</td><td data-id="1733">Near-∀</td></tr>
+          <tr data-id="1734"><td data-id="1735">Almost always</td><td data-id="1736" class="font-mono text-green-300">≈ 0.85–0.95</td><td data-id="1737">High frequency</td></tr>
+          <tr data-id="1738"><td data-id="1739">Usually / Generally</td><td data-id="1740" class="font-mono text-green-200">≈ 0.70–0.85</td><td data-id="1741">Default expectation</td></tr>
+          <tr data-id="1742"><td data-id="1743">Often / Frequently</td><td data-id="1744" class="font-mono text-yellow-300">≈ 0.55–0.70</td><td data-id="1745">More likely than not</td></tr>
+          <tr data-id="1746"><td data-id="1747">Sometimes / Occasionally</td><td data-id="1748" class="font-mono text-yellow-400">≈ 0.20–0.55</td><td data-id="1749">Near existential midpoint</td></tr>
+          <tr data-id="1750"><td data-id="1751">Rarely / Seldom</td><td data-id="1752" class="font-mono text-red-300">≈ 0.05–0.20</td><td data-id="1753">Low but non-zero</td></tr>
+          <tr data-id="1754"><td data-id="1755">Almost never</td><td data-id="1756" class="font-mono text-red-400">≈ 0.01–0.05</td><td data-id="1757">Near-∄</td></tr>
+          <tr data-id="1758"><td data-id="1759">Never / Impossible</td><td data-id="1760" class="font-mono text-red-500">≈ 0.0</td><td data-id="1761">At −∞</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- Why This Matters -->
+    <section data-id="1762" class="content-card" id="m5-rhetoric-s1t2">
+      <h2 data-id="1763" class="text-lg font-semibold text-gold mb-3">Why This Matters for Rhetoric and Argument</h2>
+      <div data-id="1764" class="note-box note-gold mb-4">
+        <p data-id="1765" class="mb-2"><strong data-id="1766">Example:</strong> "Most experts agree…"</p>
+        <p data-id="1767" class="text-sm mb-2">This sentence simultaneously makes three claims:</p>
+        <ul data-id="1768" class="list-disc list-inside text-sm space-y-1 mb-3">
+          <li data-id="1769"><strong data-id="1770">Fuzzy:</strong> The degree of "expert agreement" is high (≈ 0.8)</li>
+          <li data-id="1771"><strong data-id="1772">Probabilistic:</strong> The probability that a randomly-selected expert agrees is high</li>
+          <li data-id="1773"><strong data-id="1774">Quantifier:</strong> "Most" ≈ Near +∞ on the spectrum — but NOT at +∞</li>
+        </ul>
+        <p data-id="1775" class="text-sm font-semibold text-gold">Three patterns to watch for:</p>
+        <ul data-id="1776" class="list-disc list-inside text-sm space-y-1">
+          <li data-id="1777"><strong data-id="1778">Vagueness exploitation</strong> — Using fuzzy terms to avoid commitment</li>
+          <li data-id="1779"><strong data-id="1780">Base rate neglect</strong> — Ignoring priors when presented with striking evidence</li>
+          <li data-id="1781"><strong data-id="1782">Quantifier slippage</strong> — Moving from "some" to "most" to "all" without justification</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section data-id="1783" class="content-card" id="m5-summary-u3v4">
+      <h2 data-id="1784" class="text-lg font-semibold text-gold mb-3">Summary — Three Layers of Truth</h2>
+      <div data-id="1785" class="overflow-x-auto mb-4">
+        <table data-id="1786" class="ref-table"><thead data-id="1787"><tr data-id="1788"><th data-id="1789">Layer</th><th data-id="1790">System</th><th data-id="1791">Truth Values</th><th data-id="1792">Question Answered</th></tr></thead><tbody data-id="1793">
+          <tr data-id="1794"><td data-id="1795" class="font-semibold">Binary</td><td data-id="1796">Classical Logic</td><td data-id="1797" class="font-mono">{0, 1}</td><td data-id="1798">Is this TRUE or FALSE?</td></tr>
+          <tr data-id="1799"><td data-id="1800" class="font-semibold">Graded</td><td data-id="1801">Fuzzy Logic</td><td data-id="1802" class="font-mono">[0, 1]</td><td data-id="1803">To what degree is this true?</td></tr>
+          <tr data-id="1804"><td data-id="1805" class="font-semibold">Uncertain</td><td data-id="1806">Probabilistic Logic</td><td data-id="1807" class="font-mono">[0, 1]</td><td data-id="1808">How likely is this to be true?</td></tr>
+        </tbody></table>
+      </div>
+      <p data-id="1809" class="leading-relaxed">These are not rivals — they answer different questions. A sophisticated reasoner deploys all three: <strong data-id="1810">classical</strong> for valid inference chains, <strong data-id="1811">fuzzy</strong> for vague predicates and natural language, <strong data-id="1812">probabilistic</strong> for evidence, uncertainty, and belief updating.</p>
+    </section>
+  </div>
+  <footer data-id="1813" class="text-center py-6 text-txt-dim text-xs border-t border-border">PN-PHL313K — Phoenix Network Logic Reference Suite · Revision 1.1</footer>
+</div>
+
+  </div><!-- end pt wrapper -->
+</div><!-- end main -->
+
+<script>
+// === Guard Lucide ===
+if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+  lucide.createIcons();
+}
+
+// === View Switching ===
+const views = document.querySelectorAll('.view-panel');
+const navItems = document.querySelectorAll('.nav-item');
+
+function switchView(viewId) {
+  views.forEach(v => { v.classList.remove('active'); });
+  navItems.forEach(n => n.classList.remove('active'));
+  const target = document.getElementById(viewId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  navItems.forEach(n => {
+    if (n.dataset.view === viewId) n.classList.add('active');
+  });
+  // Close mobile menu
+  const sidebar = document.getElementById('sidebar-w0a1');
+  const overlay = document.getElementById('sidebar-overlay-k3m2');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.style.display = 'none';
+}
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => switchView(item.dataset.view));
+});
+
+// Module cards and open buttons
+document.querySelectorAll('.module-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.module-open-btn')) return;
+    const nav = card.dataset.nav;
+    if (nav) switchView(nav);
+  });
+});
+document.querySelectorAll('.module-open-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.target));
+});
+
+// === Mobile Menu ===
+const mobileBtn = document.getElementById('mobile-menu-btn-q8w1');
+const sidebar = document.getElementById('sidebar-w0a1');
+const overlay = document.getElementById('sidebar-overlay-k3m2');
+
+if (mobileBtn) {
+  mobileBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+  });
+}
+if (overlay) {
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.style.display = 'none';
+  });
+}
+
+// === Symbol Search ===
+const symbolSearch = document.getElementById('symbol-search-k3l4');
+const symbolTable = document.getElementById('symbol-table-m5n6');
+if (symbolSearch && symbolTable) {
+  symbolSearch.addEventListener('input', () => {
+    const q = symbolSearch.value.toLowerCase().trim();
+    const rows = symbolTable.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+// === Sidebar Search ===
+const sidebarSearch = document.getElementById('sidebar-search-x2p4');
+if (sidebarSearch) {
+  sidebarSearch.addEventListener('input', () => {
+    const q = sidebarSearch.value.toLowerCase().trim();
+    if (!q) return;
+    // Find first matching section
+    const allSections = document.querySelectorAll('.content-card, .op-card');
+    for (const sec of allSections) {
+      if (sec.textContent.toLowerCase().includes(q)) {
+        // Find which view this section is in
+        const view = sec.closest('.view-panel');
+        if (view) {
+          switchView(view.id);
+          setTimeout(() => {
+            sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            sec.style.boxShadow = '0 0 0 2px #c9a84c';
+            setTimeout(() => { sec.style.boxShadow = ''; }, 2000);
+          }, 400);
+        }
+        break;
+      }
+    }
+  });
+}
+
+// === Hedge Calculator ===
+const hedgeInput = document.getElementById('hedge-input-y1z2');
+const hedgeResults = document.getElementById('hedge-results-a3b4');
+
+function updateHedges() {
+  const mu = parseFloat(hedgeInput.value);
+  if (isNaN(mu) || mu < 0 || mu > 1) {
+    hedgeResults.innerHTML = '<p class="text-red-400 text-sm">Please enter a value between 0.0 and 1.0</p>';
+    return;
+  }
+  const very = Math.pow(mu, 2);
+  const fairly = Math.sqrt(mu);
+  const slightly = Math.pow(mu, 1/3);
+  const not = 1 - mu;
+  const items = [
+    { label: 'very', value: very, color: '#e74c3c' },
+    { label: 'fairly / quite', value: fairly, color: '#4db6ac' },
+    { label: 'slightly', value: slightly, color: '#c9a84c' },
+    { label: 'not', value: not, color: '#9b59b6' },
+  ];
+  hedgeResults.innerHTML = items.map(it => `
+    <div class="p-3 rounded bg-bg border border-border">
+      <div class="flex justify-between text-sm mb-1">
+        <span class="font-semibold">${it.label}</span>
+        <span class="font-mono text-gold">${it.value.toFixed(4)}</span>
+      </div>
+      <div class="w-full bg-bg-card rounded h-3 overflow-hidden">
+        <div class="h-full rounded" style="width:${(it.value * 100).toFixed(1)}%; background:${it.color}; opacity:0.7; transition:width 0.3s"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+if (hedgeInput) {
+  hedgeInput.addEventListener('input', updateHedges);
+  updateHedges();
+}
+
+// === Bayes Calculator ===
+const bayesPrior = document.getElementById('bayes-prior-i1j2');
+const bayesLike = document.getElementById('bayes-like-k3l4');
+const bayesFP = document.getElementById('bayes-fp-m5n6');
+const bayesResult = document.getElementById('bayes-result-o7p8');
+
+function updateBayes() {
+  const pA = parseFloat(bayesPrior.value);
+  const pBA = parseFloat(bayesLike.value);
+  const pBnA = parseFloat(bayesFP.value);
+  if ([pA, pBA, pBnA].some(v => isNaN(v) || v < 0 || v > 1)) {
+    bayesResult.innerHTML = '<p class="text-red-400 text-sm">All values must be between 0.0 and 1.0</p>';
+    return;
+  }
+  const pB = (pBA * pA) + (pBnA * (1 - pA));
+  if (pB === 0) {
+    bayesResult.innerHTML = '<p class="text-red-400 text-sm">P(B) = 0 — division by zero. Adjust inputs.</p>';
+    return;
+  }
+  const posterior = (pBA * pA) / pB;
+  const pct = (posterior * 100).toFixed(1);
+  let color = '#e74c3c';
+  if (posterior > 0.7) color = '#27ae60';
+  else if (posterior > 0.3) color = '#f1c40f';
+  bayesResult.innerHTML = `
+    <div class="flex items-center gap-4 mb-2">
+      <span class="text-sm font-semibold">Posterior P(A|B):</span>
+      <span class="font-mono text-xl font-bold" style="color:${color}">${posterior.toFixed(4)} (${pct}%)</span>
+    </div>
+    <div class="w-full bg-bg-card rounded h-4 overflow-hidden">
+      <div class="h-full rounded" style="width:${pct}%; background:${color}; transition:width 0.3s"></div>
+    </div>
+    <p class="text-xs text-txt-muted mt-2 font-mono">P(B) = (${pBA} × ${pA}) + (${pBnA} × ${(1-pA).toFixed(2)}) = ${pB.toFixed(4)}</p>
+  `;
+}
+
+if (bayesPrior && bayesLike && bayesFP) {
+  bayesPrior.addEventListener('input', updateBayes);
+  bayesLike.addEventListener('input', updateBayes);
+  bayesFP.addEventListener('input', updateBayes);
+  updateBayes();
+}
+</script>
+</body>
+</html>
