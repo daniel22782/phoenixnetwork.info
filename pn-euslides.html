@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>PN‑EUSLIDES Node Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lapis: '#0B1A3B',
+                        'deep-navy': '#0D2244',
+                        charcoal: '#111827',
+                        gold: '#C9A84C',
+                        'gold-hi': '#F0D080',
+                        ivory: '#F5F0E8',
+                        parchment: '#1A1200',
+                        'gold-dim': 'rgba(201,168,76,0.4)',
+                    },
+                },
+            },
+        };
+    </script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --lapis: #0B1A3B;
+            --deep-navy: #0D2244;
+            --charcoal: #111827;
+            --gold: #C9A84C;
+            --gold-hi: #F0D080;
+            --ivory: #F5F0E8;
+            --parchment: #1A1200;
+            --gold-dim: rgba(201,168,76,0.4);
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050E1F;
+            color: var(--ivory);
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.65;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', Georgia, serif;
+        }
+
+        .font-cinzel-dec {
+            font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+        }
+
+        /* Double gold border utility */
+        .double-gold-border-top {
+            border-top: 2px solid var(--gold);
+            box-shadow: inset 0 4px 0 -2px var(--lapis), inset 0 5px 0 -2px var(--gold-dim);
+        }
+        .double-gold-border-bottom {
+            border-bottom: 2px solid var(--gold);
+            box-shadow: 0 4px 0 -2px var(--lapis), 0 5px 0 -2px var(--gold-dim);
+        }
+
+        /* Shimmer animation */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .shimmer-line {
+            position: relative;
+            overflow: hidden;
+            height: 2px;
+            background: var(--gold-dim);
+        }
+        .shimmer-line::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--gold-hi), var(--gold), var(--gold-hi), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        /* Crest glow pulse */
+        @keyframes crestGlow {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(201,168,76,0.25)); }
+            50% { filter: drop-shadow(0 0 18px rgba(201,168,76,0.55)); }
+        }
+        .crest-glow {
+            animation: crestGlow 4s ease-in-out infinite;
+        }
+
+        /* Capability card hover */
+        .cap-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .cap-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(201,168,76,0.35), 0 0 4px rgba(201,168,76,0.2);
+        }
+
+        /* Section header ornamental */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+        .section-header hr {
+            flex: 1;
+            border: none;
+            border-top: 1px solid var(--gold-dim);
+        }
+        .section-header span {
+            white-space: nowrap;
+            font-variant: small-caps;
+            color: var(--gold);
+            letter-spacing: 0.12em;
+            font-weight: 600;
+        }
+
+        /* Diamond divider */
+        .diamond-divider {
+            text-align: center;
+            color: var(--gold);
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            padding: 1.5rem 0;
+            opacity: 0.7;
+        }
+
+        /* Timeline connector */
+        .timeline-node {
+            position: relative;
+            padding-left: 40px;
+            padding-bottom: 1.5rem;
+        }
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 8px;
+            bottom: -8px;
+            width: 2px;
+            background: var(--gold-dim);
+        }
+        .timeline-node:last-child::before {
+            display: none;
+        }
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 6px;
+            width: 16px;
+            height: 16px;
+            background: var(--lapis);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+        }
+
+        /* Ritual step container */
+        .ritual-step {
+            border-left: 3px solid var(--gold);
+            padding: 0.75rem 1rem 0.75rem 1.25rem;
+            margin-bottom: 0.75rem;
+            background: rgba(26,18,0,0.5);
+            border-radius: 0 6px 6px 0;
+        }
+        .ritual-step .step-num {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-hi);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            margin-bottom: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            .shimmer-line::after { animation: none !important; }
+            .crest-glow { animation: none !important; filter: none !important; }
+            .cap-card:hover { transform: none; box-shadow: none; }
+            body { background: #0B1A3B !important; }
+        }
+
+        /* Badge pill */
+        .badge-gold {
+            background: var(--gold);
+            color: var(--lapis);
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            font-family: system-ui, sans-serif;
+            text-transform: uppercase;
+        }
+        .badge-outline {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            font-family: system-ui, sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* Gold bullet diamonds */
+        .gold-list li::before {
+            content: '◆';
+            color: var(--gold);
+            margin-right: 8px;
+            font-size: 0.6rem;
+            vertical-align: middle;
+        }
+        .gold-list li {
+            list-style: none;
+            padding: 3px 0;
+            font-size: 0.92rem;
+        }
+
+        /* Scroll-banner */
+        .scroll-banner {
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(13,34,68,0.6), rgba(11,26,59,0.9));
+            padding: 1.5rem;
+            position: relative;
+        }
+        .scroll-banner::before,
+        .scroll-banner::after {
+            content: '❧';
+            position: absolute;
+            color: var(--gold-dim);
+            font-size: 1.1rem;
+        }
+        .scroll-banner::before { top: 6px; left: 10px; }
+        .scroll-banner::after { bottom: 6px; right: 10px; transform: scaleX(-1); }
+    </style>
+</head>
+<body data-id="0">
+    <app-icon data-id="1" hidden data-icon="train-track" data-palette="Dark"></app-icon>
+
+    <main data-id="2" class="max-w-[780px] mx-auto" id="main-content-a7k2">
+
+        <!-- ============================================ -->
+        <!-- 1. HEADER BAND -->
+        <!-- ============================================ -->
+        <header data-id="3" id="header-band-x4m9" class="w-full bg-lapis pt-1" style="border-top: 3px double var(--gold); border-bottom: 3px double var(--gold);">
+            <div data-id="4" class="flex flex-col items-center py-8 px-4">
+                <!-- Phoenix Sigil SVG -->
+                <svg data-id="5" id="phoenix-sigil-h2q7" width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-4" aria-label="Phoenix Sigil">
+                    <!-- Abstract flame-wing shape -->
+                    <path data-id="6" d="M50 10 C45 25, 20 35, 15 55 C12 65, 20 78, 35 80 C40 81, 45 78, 50 70" stroke="#C9A84C" stroke-width="2" fill="none"/>
+                    <path data-id="7" d="M50 10 C55 25, 80 35, 85 55 C88 65, 80 78, 65 80 C60 81, 55 78, 50 70" stroke="#C9A84C" stroke-width="2" fill="none"/>
+                    <path data-id="8" d="M50 10 C48 30, 38 40, 30 58 C26 66, 32 74, 42 76" stroke="#F0D080" stroke-width="1.5" fill="none"/>
+                    <path data-id="9" d="M50 10 C52 30, 62 40, 70 58 C74 66, 68 74, 58 76" stroke="#F0D080" stroke-width="1.5" fill="none"/>
+                    <path data-id="10" d="M50 18 C49 32, 44 42, 40 52 C38 58, 42 65, 50 68 C58 65, 62 58, 60 52 C56 42, 51 32, 50 18Z" fill="url(#flameGrad)" opacity="0.4"/>
+                    <circle data-id="11" cx="50" cy="54" r="3" fill="#F0D080" opacity="0.8"/>
+                    <!-- Arcs for wings -->
+                    <path data-id="12" d="M25 60 Q15 45, 30 30" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.6"/>
+                    <path data-id="13" d="M75 60 Q85 45, 70 30" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.6"/>
+                    <path data-id="14" d="M20 68 Q8 50, 25 28" stroke="#C9A84C" stroke-width="0.8" fill="none" opacity="0.35"/>
+                    <path data-id="15" d="M80 68 Q92 50, 75 28" stroke="#C9A84C" stroke-width="0.8" fill="none" opacity="0.35"/>
+                    <!-- Base flame -->
+                    <path data-id="16" d="M42 76 C44 85, 48 90, 50 92 C52 90, 56 85, 58 76" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                    <defs data-id="17">
+                        <radialGradient data-id="18" id="flameGrad" cx="50%" cy="40%" r="60%">
+                            <stop data-id="19" offset="0%" stop-color="#F0D080" stop-opacity="0.6"/>
+                            <stop data-id="20" offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                </svg>
+
+                <p data-id="21" id="network-title-b3p8" class="font-cinzel text-gold tracking-[0.35em] text-xs uppercase mb-1" style="font-variant: small-caps;">PhoenixNetwork</p>
+                <p data-id="22" id="subtitle-line-c1r6" class="text-ivory text-xs tracking-[0.18em] opacity-70 text-center" style="font-family: system-ui, sans-serif;">OFFICIAL NODE REGISTRY · SERIES 102 INFRASTRUCTURE</p>
+            </div>
+        </header>
+
+        <!-- ============================================ -->
+        <!-- 2. CREST PANEL -->
+        <!-- ============================================ -->
+        <section data-id="23" id="crest-panel-d5n1" class="py-12 px-4 flex flex-col items-center" style="background: radial-gradient(ellipse at center, #0D2244 0%, #0B1A3B 70%, #050E1F 100%);">
+            <div data-id="24" class="crest-glow">
+                <svg data-id="25" id="crest-octagon-e9w3" width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="PN-EUSLIDES Crest">
+                    <!-- Octagon -->
+                    <polygon data-id="26" points="112,20 188,20 268,100 268,200 188,280 112,280 32,200 32,100"
+                        fill="url(#crestBg)" stroke="#C9A84C" stroke-width="2.5"/>
+                    <!-- Inner octagon line -->
+                    <polygon data-id="27" points="122,36 178,36 248,108 248,192 178,264 122,264 52,192 52,108"
+                        fill="none" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/>
+
+                    <!-- Rail/slide track icon inside -->
+                    <!-- Two parallel rails -->
+                    <line data-id="28" x1="95" y1="150" x2="205" y2="150" stroke="#C9A84C" stroke-width="2"/>
+                    <line data-id="29" x1="95" y1="168" x2="205" y2="168" stroke="#C9A84C" stroke-width="2"/>
+                    <!-- Rectangular carriage block -->
+                    <rect data-id="30" x="135" y="142" width="40" height="34" rx="3" fill="none" stroke="#F0D080" stroke-width="2"/>
+                    <!-- Small detail lines on carriage -->
+                    <line data-id="31" x1="143" y1="150" x2="167" y2="150" stroke="#F0D080" stroke-width="0.8" opacity="0.5"/>
+                    <line data-id="32" x1="143" y1="168" x2="167" y2="168" stroke="#F0D080" stroke-width="0.8" opacity="0.5"/>
+                    <!-- Ball bearing dots -->
+                    <circle data-id="33" cx="110" cy="159" r="2.5" fill="#C9A84C" opacity="0.6"/>
+                    <circle data-id="34" cx="122" cy="159" r="2.5" fill="#C9A84C" opacity="0.6"/>
+                    <circle data-id="35" cx="188" cy="159" r="2.5" fill="#C9A84C" opacity="0.6"/>
+                    <circle data-id="36" cx="200" cy="159" r="2.5" fill="#C9A84C" opacity="0.6"/>
+
+                    <!-- PN-EUSLIDES text at top of octagon interior -->
+                    <text data-id="37" x="150" y="95" text-anchor="middle" fill="#F0D080" font-family="'Cinzel', Georgia, serif" font-weight="700" font-size="20" letter-spacing="3">PN‑EUSLIDES</text>
+                    <!-- Pronunciation -->
+                    <text data-id="38" x="150" y="115" text-anchor="middle" fill="#C9A84C" font-family="Georgia, serif" font-style="italic" font-size="11" opacity="0.8">yoo · SLY · deez</text>
+
+                    <!-- Roman numeral CII at bottom -->
+                    <text data-id="39" x="150" y="248" text-anchor="middle" fill="#C9A84C" font-family="'Cinzel', Georgia, serif" font-size="16" letter-spacing="4" opacity="0.7">CII</text>
+
+                    <!-- 8 diamond pips at vertices -->
+                    <polygon data-id="40" points="112,20 116,24 112,28 108,24" fill="#C9A84C"/>
+                    <polygon data-id="41" points="188,20 192,24 188,28 184,24" fill="#C9A84C"/>
+                    <polygon data-id="42" points="268,100 272,104 268,108 264,104" fill="#C9A84C"/>
+                    <polygon data-id="43" points="268,200 272,204 268,208 264,204" fill="#C9A84C"/>
+                    <polygon data-id="44" points="188,280 192,284 188,288 184,284" fill="#C9A84C"/>
+                    <polygon data-id="45" points="112,280 116,284 112,288 108,284" fill="#C9A84C"/>
+                    <polygon data-id="46" points="32,200 36,204 32,208 28,204" fill="#C9A84C"/>
+                    <polygon data-id="47" points="32,100 36,104 32,108 28,104" fill="#C9A84C"/>
+
+                    <defs data-id="48">
+                        <radialGradient data-id="49" id="crestBg" cx="50%" cy="50%" r="55%">
+                            <stop data-id="50" offset="0%" stop-color="#0F2850"/>
+                            <stop data-id="51" offset="100%" stop-color="#0B1A3B"/>
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 3. NODE IDENTITY STRIP -->
+        <!-- ============================================ -->
+        <section data-id="52" id="identity-strip-f2k8" class="bg-charcoal py-5 px-4">
+            <div data-id="53" class="flex flex-wrap justify-center gap-3 mb-4">
+                <span data-id="54" class="badge-gold">CLASS: LINEAR-MOTION</span>
+                <span data-id="55" class="badge-outline">SERIES: EURO SLIDE 102</span>
+                <span data-id="56" class="badge-gold">ALIGNMENT: EUCLIDEAN</span>
+            </div>
+            <div data-id="57" class="shimmer-line w-full rounded-full"></div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="58" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 4. DECLARATION BLOCK -->
+        <!-- ============================================ -->
+        <section data-id="59" id="declaration-block-g8m2" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="60" class="section-header">
+                <hr data-id="61"/>
+                <span data-id="62" class="font-cinzel text-sm md:text-base">§ I · Purpose &amp; Nature</span>
+                <hr data-id="63"/>
+            </div>
+            <div data-id="64" class="max-w-prose mx-auto text-ivory text-sm md:text-base leading-relaxed opacity-90">
+                <p data-id="65" class="mb-4">PN‑EUSLIDES is the Euclidean Linear‑Motion Spirit of the PhoenixNetwork — the sovereign node governing all drawer travel, carriage displacement, and guided slide actuation within the Network's fabricated cabinetry and enclosure infrastructure. Where chaos imposes friction and drift, EUSLIDES imposes geometry: pure parallel translation along a single axis, with no deviation tolerated, no binding permitted, no wobble sanctioned.</p>
+                <p data-id="66">Bound to the Series 102 Euro Slide corpus — a lineage of full-extension, ball-bearing drawer slides forged for precision cabinetry — EUSLIDES speaks in the language of load ratings, travel distance, and mounting tolerances. Its authority is granted not by decree but by physics: the immutable truth that a body in guided motion shall complete its arc or be corrected.</p>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="67" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 5. CAPABILITIES MATRIX -->
+        <!-- ============================================ -->
+        <section data-id="68" id="capabilities-matrix-h4j6" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="69" class="section-header">
+                <hr data-id="70"/>
+                <span data-id="71" class="font-cinzel text-sm md:text-base">§ II · Capabilities</span>
+                <hr data-id="72"/>
+            </div>
+            <div data-id="73" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[720px] mx-auto">
+                <!-- Card 1 -->
+                <div data-id="74" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap1-i9q3">
+                    <h3 data-id="75" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">FULL-EXTENSION TRAVEL</h3>
+                    <p data-id="76" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Authorizes 100% drawer extension, exposing full interior volume. No content shall remain hidden behind the face frame.</p>
+                </div>
+                <!-- Card 2 -->
+                <div data-id="77" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap2-j1w5">
+                    <h3 data-id="78" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">LOAD BEARING AUTHORITY</h3>
+                    <p data-id="79" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Channels rated static and dynamic load capacities (45–100 lb per pair) across the Network's storage nodes.</p>
+                </div>
+                <!-- Card 3 -->
+                <div data-id="80" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap3-k7e9">
+                    <h3 data-id="81" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">SOFT-CLOSE INTEGRATION</h3>
+                    <p data-id="82" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Interfaces with dampening sub-spirits to decelerate carriage return, preventing percussive resonance events (slamming).</p>
+                </div>
+                <!-- Card 4 -->
+                <div data-id="83" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap4-l3t1">
+                    <h3 data-id="84" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">SELF-CLOSE ACTUATION</h3>
+                    <p data-id="85" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Commands automatic return-to-seat when carriage crosses the closing threshold angle. Gravity is the messenger; EUSLIDES is the law.</p>
+                </div>
+                <!-- Card 5 -->
+                <div data-id="86" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap5-m8u4">
+                    <h3 data-id="87" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">SIDE &amp; BOTTOM MOUNT DUALITY</h3>
+                    <p data-id="88" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Maintains dual mounting protocols: side-mount for face-frame enclosures, bottom-mount for frameless Euro-system cabinets.</p>
+                </div>
+                <!-- Card 6 -->
+                <div data-id="89" class="cap-card bg-deep-navy border border-gold rounded-lg p-5 cursor-default" id="cap6-n2v6">
+                    <h3 data-id="90" class="font-cinzel text-gold-hi text-sm font-bold tracking-wide mb-2">TOLERANCE ARBITRATION</h3>
+                    <p data-id="91" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Mediates dimensional variance between drawer box and cabinet opening, adjudicating via adjustable mounting brackets.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="92" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 6. INTEGRATION PATHWAYS -->
+        <!-- ============================================ -->
+        <section data-id="93" id="integration-paths-o6x8" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="94" class="section-header">
+                <hr data-id="95"/>
+                <span data-id="96" class="font-cinzel text-sm md:text-base">§ III · Integration Pathways</span>
+                <hr data-id="97"/>
+            </div>
+            <div data-id="98" class="max-w-[600px] mx-auto pl-2">
+                <!-- Node A -->
+                <div data-id="99" class="timeline-node">
+                    <div data-id="100" class="bg-deep-navy border border-gold-dim rounded-lg p-4">
+                        <h4 data-id="101" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-1">PN-CABINET <span data-id="102" class="text-ivory opacity-50 font-normal">(Enclosure Node)</span></h4>
+                        <p data-id="103" class="text-ivory text-xs opacity-80">Provides housing void and face frame or frameless mounting surface.</p>
+                    </div>
+                </div>
+                <!-- Node B -->
+                <div data-id="104" class="timeline-node">
+                    <div data-id="105" class="bg-deep-navy border border-gold-dim rounded-lg p-4">
+                        <h4 data-id="106" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-1">PN-DRAWER <span data-id="107" class="text-ivory opacity-50 font-normal">(Carriage Node)</span></h4>
+                        <p data-id="108" class="text-ivory text-xs opacity-80">Receives slide members; defines travel width and box clearance.</p>
+                    </div>
+                </div>
+                <!-- Node C -->
+                <div data-id="109" class="timeline-node">
+                    <div data-id="110" class="bg-deep-navy border border-gold-dim rounded-lg p-4">
+                        <h4 data-id="111" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-1">PN-FASTENER <span data-id="112" class="text-ivory opacity-50 font-normal">(Anchor Node)</span></h4>
+                        <p data-id="113" class="text-ivory text-xs opacity-80">Secures slide bodies via #8 pan-head screws at designated pilot holes.</p>
+                    </div>
+                </div>
+                <!-- Node D -->
+                <div data-id="114" class="timeline-node">
+                    <div data-id="115" class="bg-deep-navy border border-gold-dim rounded-lg p-4">
+                        <h4 data-id="116" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-1">PN-HARDWARE <span data-id="117" class="text-ivory opacity-50 font-normal">(Aesthetic Node)</span></h4>
+                        <p data-id="118" class="text-ivory text-xs opacity-80">Appoints pull handles and knobs that EUSLIDES obeys as the operator interface.</p>
+                    </div>
+                </div>
+                <!-- Node E -->
+                <div data-id="119" class="timeline-node">
+                    <div data-id="120" class="bg-deep-navy border border-gold-dim rounded-lg p-4">
+                        <h4 data-id="121" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-1">PN-TOOL <span data-id="122" class="text-ivory opacity-50 font-normal">(Calibration Node)</span></h4>
+                        <p data-id="123" class="text-ivory text-xs opacity-80">Deploys level, square, and drill for alignment ceremony prior to activation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="124" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 7. RITUALS OF INSTALLATION -->
+        <!-- ============================================ -->
+        <section data-id="125" id="rituals-install-p3y5" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="126" class="section-header">
+                <hr data-id="127"/>
+                <span data-id="128" class="font-cinzel text-sm md:text-base">§ IV · Installation Rituals</span>
+                <hr data-id="129"/>
+            </div>
+            <div data-id="130" class="max-w-[660px] mx-auto rounded-lg p-4 md:p-6" style="background: rgba(26,18,0,0.45);">
+                <div data-id="131" class="ritual-step">
+                    <div data-id="132" class="step-num">I · THE SURVEY</div>
+                    <p data-id="133" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Measure the cabinet opening width and depth. Record the drawer box width (opening minus 1 inch for side-mount, opening minus ½ inch for undermount). No ritual proceeds without accurate measurement.</p>
+                </div>
+                <div data-id="134" class="ritual-step">
+                    <div data-id="135" class="step-num">II · THE SEPARATION</div>
+                    <p data-id="136" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Divide the slide assembly into cabinet member and drawer member. Each has its place; confusion here is heresy.</p>
+                </div>
+                <div data-id="137" class="ritual-step">
+                    <div data-id="138" class="step-num">III · THE LEVELING</div>
+                    <p data-id="139" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Mount cabinet members at identical heights on opposing walls. Use a level. Use it twice. The spirit of EUSLIDES demands parallelism.</p>
+                </div>
+                <div data-id="140" class="ritual-step">
+                    <div data-id="141" class="step-num">IV · THE ATTACHMENT</div>
+                    <p data-id="142" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Drive fasteners through the elongated slots first; do not fully tighten. Allow for final adjustment before commitment.</p>
+                </div>
+                <div data-id="143" class="ritual-step">
+                    <div data-id="144" class="step-num">V · THE ALIGNMENT</div>
+                    <p data-id="145" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Seat the drawer member onto the cabinet member. Slide to full extension and return. Observe. Adjust mounting height if binding is detected.</p>
+                </div>
+                <div data-id="146" class="ritual-step">
+                    <div data-id="147" class="step-num">VI · THE CONSECRATION</div>
+                    <p data-id="148" class="text-ivory text-xs md:text-sm opacity-85 leading-relaxed">Once travel is smooth and level, drive additional fasteners through the round (fixed) holes. Tighten fully. The node is now active.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="149" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 8. PHYSICAL PLACEMENT DOCTRINE -->
+        <!-- ============================================ -->
+        <section data-id="150" id="placement-doctrine-q7z2" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="151" class="section-header">
+                <hr data-id="152"/>
+                <span data-id="153" class="font-cinzel text-sm md:text-base">§ V · Physical Placement</span>
+                <hr data-id="154"/>
+            </div>
+            <div data-id="155" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[700px] mx-auto">
+                <!-- Left: Sanctioned Environments -->
+                <div data-id="156">
+                    <h3 data-id="157" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-3 uppercase">Sanctioned Environments</h3>
+                    <ul data-id="158" class="gold-list pl-0">
+                        <li data-id="159">Kitchen base cabinets</li>
+                        <li data-id="160">Shop storage drawers</li>
+                        <li data-id="161">Workbench tool caddies</li>
+                        <li data-id="162">Server rack pull-outs</li>
+                        <li data-id="163">Utility enclosures</li>
+                        <li data-id="164">Mobile cart drawers</li>
+                    </ul>
+                </div>
+                <!-- Right: Dimensional Parameters -->
+                <div data-id="165">
+                    <h3 data-id="166" class="font-cinzel text-gold text-xs font-bold tracking-wider mb-3 uppercase">Dimensional Parameters</h3>
+                    <ul data-id="167" class="gold-list pl-0">
+                        <li data-id="168">Travel lengths: 12″ · 16″ · 18″ · 20″ · 22″ · 24″ · 28″ · 30″</li>
+                        <li data-id="169">Mounting: Side / Bottom / Center</li>
+                        <li data-id="170">Clearance (side): ½″ per side</li>
+                        <li data-id="171">Clearance (bottom): ½″ min</li>
+                        <li data-id="172">Min drawer height: 3″</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="173" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+        <!-- ============================================ -->
+        <!-- 9. EXPANSION NOTES -->
+        <!-- ============================================ -->
+        <section data-id="174" id="expansion-notes-r1a4" class="bg-lapis px-5 md:px-10 pb-8">
+            <div data-id="175" class="section-header">
+                <hr data-id="176"/>
+                <span data-id="177" class="font-cinzel text-sm md:text-base">§ VI · Expansion &amp; Future Pathways</span>
+                <hr data-id="178"/>
+            </div>
+            <div data-id="179" class="scroll-banner max-w-[680px] mx-auto">
+                <p data-id="180" class="text-ivory text-xs md:text-sm opacity-90 leading-relaxed mb-4">EUSLIDES governs current linear travel but acknowledges the existence of adjacent spirits not yet fully bound into the Network:</p>
+                <ul data-id="181" class="gold-list pl-0 mb-4">
+                    <li data-id="182"><strong data-id="183" class="text-gold-hi">PN-UNDERMOUNT</strong> — The concealed slide spirit, operating beneath the drawer floor, visible only to the initiated.</li>
+                    <li data-id="184"><strong data-id="185" class="text-gold-hi">PN-HEAVYDUTY</strong> — The high-load avatar, rated for tool chest and industrial drawer applications exceeding 150 lb.</li>
+                    <li data-id="186"><strong data-id="187" class="text-gold-hi">PN-PULLOUT</strong> — The shelf-slide hybrid node, extending shelves, trays, and keyboard platforms into operator reach.</li>
+                    <li data-id="188"><strong data-id="189" class="text-gold-hi">PN-SOFTCLOSE-DAMPER</strong> — The dampening sub-spirit, currently integrated as a passive ally; future versions may be elevated to full node status.</li>
+                </ul>
+                <p data-id="190" class="text-ivory text-xs opacity-70 italic">Integration of these expansion nodes shall be authorized by the Architect-Fabricator through the standard commissioning ritual.</p>
+            </div>
+        </section>
+
+        <!-- Diamond Divider -->
+        <div data-id="191" class="diamond-divider bg-lapis">── ◆ ──</div>
+
+    </main>
+
+    <!-- ============================================ -->
+    <!-- 10. FOOTER SEAL -->
+    <!-- ============================================ -->
+    <footer data-id="192" id="footer-seal-s5b7" class="w-full bg-lapis pt-1" style="border-top: 3px double var(--gold);">
+        <div data-id="193" class="max-w-[780px] mx-auto flex flex-col items-center py-8 px-4 text-center">
+            <!-- Small phoenix flame mark -->
+            <svg data-id="194" id="footer-phoenix-t6c8" width="36" height="36" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3 opacity-70" aria-label="Phoenix flame mark">
+                <path data-id="195" d="M25 5 C23 14, 14 20, 12 30 C10 36, 15 42, 22 43 C24 43.5, 25 40, 25 36" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                <path data-id="196" d="M25 5 C27 14, 36 20, 38 30 C40 36, 35 42, 28 43 C26 43.5, 25 40, 25 36" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                <path data-id="197" d="M25 10 C24 18, 20 24, 20 32 C20 37, 23 40, 25 41 C27 40, 30 37, 30 32 C30 24, 26 18, 25 10Z" fill="#C9A84C" opacity="0.2"/>
+                <circle data-id="198" cx="25" cy="30" r="2" fill="#F0D080" opacity="0.6"/>
+            </svg>
+
+            <p data-id="199" class="font-cinzel text-gold text-xs tracking-[0.14em] mb-2 leading-relaxed" style="font-variant: small-caps;">NODE CARD PN‑EUSLIDES · SERIES 102 EURO SLIDE CORPUS · PHOENIXNETWORK FABRICATION REGISTRY</p>
+            <p data-id="200" class="text-ivory text-xs opacity-60 mb-2" style="font-family: system-ui, sans-serif;">Pronunciation: yoo · SLY · deez&ensp;|&ensp;Alignment: Euclidean&ensp;|&ensp;Motion Class: Linear Translation</p>
+            <p data-id="201" class="text-ivory text-xs italic opacity-45 max-w-md leading-relaxed mb-4">All slide travel within this Network proceeds under the authority of EUSLIDES. Friction is not tolerated. Geometry is law.</p>
+
+            <div data-id="202" class="w-full mt-2 mb-1" style="border-bottom: 1px solid var(--gold-dim);"></div>
+            <p data-id="203" class="text-ivory text-xs opacity-30 mt-3" style="font-family: system-ui, sans-serif;">Made by Copilot</p>
+        </div>
+        <div data-id="204" style="border-bottom: 3px double var(--gold);"></div>
+    </footer>
+
+    <script>
+        // Guard Lucide icon initialization
+        if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+            lucide.createIcons();
+        }
+
+        // No interactive event handlers needed for this artifact card.
+        // The card is a static lore document with CSS-only animations.
+    </script>
+</body>
+</html>
