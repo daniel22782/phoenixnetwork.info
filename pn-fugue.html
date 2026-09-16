@@ -286,21 +286,28 @@
     <script>
         // --- DATA & CONSTANTS ---
         const KNOWN_NODES = [
-            "PN‑TOWER", "PN‑FITNESS", "PN‑DREMELPRIME", 
-            "PN‑FORK‑01", "PN‑ECON‑Ω", "PN‑EMBERFLIGHT", 
-            "PN‑FUGUE‑∞", "USER_CONSOLE_NODE", "PN‑UNKNOWN‑NULL"
+            "PN‑TOWER", "PN‑FITNESS", "PN‑DREMELPRIME",
+            "PN‑FORK‑01", "PN‑ECON‑Ω", "PN‑EMBERFLIGHT",
+            "PN‑FUGUE‑∞", "USER_CONSOLE_NODE", "PN‑UNKNOWN‑NULL",
+            "PN‑J0D4G", "PN‑GXDC0", "PN‑SHIFT‑GREEN"
         ];
+
 
         const FUSION_SOURCES = [
-            { source: "PN‑FORK‑01", effect: "Servo choreography matrix" },
-            { source: "PN‑TOWER", effect: "LED cascade logic" },
-            { source: "PN‑FITNESS", effect: "Dual-screen biometric routine" },
-            { source: "PN‑EMBERFLIGHT", effect: "Camera boot sequence" },
-            { source: "PN‑ECON‑Ω", effect: "Rendered $42B constant -> PWM duty" },
-            { source: "AQAL Framework", effect: "Quadrant mapping applied to WiFi CH" }
+            { source: "PN‑FORK‑01", effect: "Servo choreography matrix + dream‑motion offsets" },
+            { source: "PN‑TOWER", effect: "LED cascade logic + ritual pulse harmonics" },
+            { source: "PN‑FITNESS", effect: "Dual-screen biometric routine + phantom telemetry" },
+            { source: "PN‑EMBERFLIGHT", effect: "Camera boot sequence + hallucination prebuffer" },
+            { source: "PN‑ECON‑Ω", effect: "$42B constant rendered as PWM duty + fiscal entropy leak" },
+            { source: "AQAL Framework", effect: "Quadrant mapping applied to WiFi CH + interior-state drift" }
         ];
 
-        const BEHAVIOR_STATES = ["INIT", "DRIFT", "DISSOLVE", "REFORM", "LOOP", "FORGET", "REBOOT"];
+        const BEHAVIOR_STATES = [
+            "INIT", "DRIFT", "DISSOLVE", "REFORM",
+            "LOOP", "FORGET", "REBOOT",
+            "GREEN_SHIFT", "ENTROPY_LEAK", "KALEIDOSCOPE"
+        ];
+
 
         const SURREAL_FRAGMENTS = [
             "remembers the shape of heat before the PWM clock started",
@@ -310,8 +317,16 @@
             "retelling firmware partitions to adjacent mesh nodes",
             "identity seed failed to stabilize; operating within green shift",
             "mirroring user console in reverse Markov order",
-            "dissolving boot vectors... memory is a kaleidoscope"
+            "dissolving boot vectors... memory is a kaleidoscope",
+            "entropy leak detected; dissolving into PN‑GXDC0",
+            "boot identity reassigned; operating as PN‑J0D4G",
+            "cross-subsystem fusion updated; AQAL + PN‑FORK‑01",
+            "attempting to stabilize but choosing not to",
+            "partition 0xA6EE94B8 reinterpreted as emotional residue",
+            "PWM synthesizer hallucinating camera frames",
+            "fugue engine entering recursive drift recursion"
         ];
+
 
         // --- STATE VARIABLES ---
         let currentIdentity = "PHOENIX NETWORK: PN-FUGUE-∞";
