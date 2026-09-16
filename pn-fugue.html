@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PN‑FUGUE‑∞ — The Perpetual Fugue Node</title>
+    <style>
+        :root {
+            --bg-color: #050608;
+            --term-green: #00ff66;
+            --accent-cyan: #00e5ff;
+            --accent-magenta: #ff0055;
+            --accent-gold: #ffb700;
+            --panel-bg: rgba(15, 20, 28, 0.75);
+            --border-color: rgba(0, 255, 102, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #d1d5db;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent-cyan);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .status-badge {
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid var(--accent-magenta);
+            color: var(--accent-magenta);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 8px var(--accent-magenta); }
+            100% { opacity: 0.6; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* Identity Display */
+        .identity-val {
+            font-size: 1.4rem;
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 5px;
+            word-break: break-all;
+            transition: color 0.5s ease;
+        }
+
+        .seed-hash {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        /* Behavior Tree Visualizer */
+        .state-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .state-node {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 4px;
+            color: #9ca3af;
+            transition: all 0.3s;
+        }
+
+        .state-node.active {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            background: rgba(255, 183, 0, 0.1);
+            box-shadow: 0 0 10px rgba(255, 183, 0, 0.3);
+            font-weight: bold;
+        }
+
+        /* Subsystem Fusion Engine */
+        .fusion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .fusion-item {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--term-green);
+            padding: 8px 10px;
+        }
+
+        .fusion-source {
+            font-size: 0.7rem;
+            color: #9ca3af;
+        }
+
+        /* Canvas Visualization */
+        canvas {
+            width: 100%;
+            height: 180px;
+            background: #000;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* NVS Kaleidoscope Visualizer */
+        .nvs-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .nvs-cell {
+            aspect-ratio: 1;
+            background: #111;
+            border-radius: 2px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            transition: background-color 0.8s, color 0.8s;
+        }
+
+        /* Output Stream Console */
+        .console {
+            background: #000;
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            border-radius: 4px;
+            padding: 10px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: var(--term-green);
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .console-line {
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+        .console-line.surreal { color: var(--accent-magenta); }
+        .console-line.system { color: var(--accent-cyan); }
+        .console-line.fusion { color: var(--accent-gold); }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 12px var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌀 PN‑FUGUE‑∞</h1>
+        <div class="status-badge" id="fugue-state">STATE: DRIFTING</div>
+    </header>
+
+    <div class="dashboard">
+        <!-- Identity Panel -->
+        <div class="panel">
+            <div class="panel-title">1. Fluid Boot Identity</div>
+            <div class="identity-val" id="current-id">PN-FUGUE-∞</div>
+            <div class="seed-hash" id="seed-hash">SEED: 0x00000000</div>
+            
+            <div class="panel-title" style="margin-top: 15px;">4. Behavior Cycle State</div>
+            <div class="state-flow" id="state-flow">
+                <span class="state-node" id="st-INIT">INIT</span>
+                <span class="state-node" id="st-DRIFT">DRIFT</span>
+                <span class="state-node" id="st-DISSOLVE">DISSOLVE</span>
+                <span class="state-node" id="st-REFORM">REFORM</span>
+                <span class="state-node" id="st-LOOP">LOOP</span>
+                <span class="state-node" id="st-FORGET">FORGET</span>
+                <span class="state-node" id="st-REBOOT">REBOOT</span>
+            </div>
+        </div>
+
+        <!-- Cross-Subsystem Fusion -->
+        <div class="panel">
+            <div class="panel-title">2. Active Subsystem Fusion</div>
+            <div class="fusion-list" id="fusion-list">
+                <!-- Dynamically generated -->
+            </div>
+            <div class="panel-title" style="margin-top: 15px;">PWM / Signal Synthesizer</div>
+            <canvas id="signalCanvas"></canvas>
+        </div>
+
+        <!-- NVS Mosaic -->
+        <div class="panel">
+            <div class="panel-title">3. NVS Memory Mosaic (Shifting Entropy)</div>
+            <div style="font-size: 0.75rem; color: #888; margin-bottom: 5px;">Reinterpreted Flash Partitions:</div>
+            <div class="nvs-grid" id="nvs-grid"></div>
+        </div>
+
+        <!-- Dream Generator Console -->
+        <div class="panel" style="grid-column: 1 / -1;">
+            <div class="panel-title">Output: Markov Telemetry & Surreal Stream</div>
+            <div class="console" id="console"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btn-reboot">⚡ Force Instant Fugue Reboot</button>
+        <button id="btn-mutate">🌀 Inject Entropy Leak</button>
+    </div>
+
+    <script>
+        // --- DATA & CONSTANTS ---
+        const KNOWN_NODES = [
+            "PN‑TOWER", "PN‑FITNESS", "PN‑DREMELPRIME", 
+            "PN‑FORK‑01", "PN‑ECON‑Ω", "PN‑EMBERFLIGHT", 
+            "PN‑FUGUE‑∞", "USER_CONSOLE_NODE", "PN‑UNKNOWN‑NULL"
+        ];
+
+        const FUSION_SOURCES = [
+            { source: "PN‑FORK‑01", effect: "Servo choreography matrix" },
+            { source: "PN‑TOWER", effect: "LED cascade logic" },
+            { source: "PN‑FITNESS", effect: "Dual-screen biometric routine" },
+            { source: "PN‑EMBERFLIGHT", effect: "Camera boot sequence" },
+            { source: "PN‑ECON‑Ω", effect: "Rendered $42B constant -> PWM duty" },
+            { source: "AQAL Framework", effect: "Quadrant mapping applied to WiFi CH" }
+        ];
+
+        const BEHAVIOR_STATES = ["INIT", "DRIFT", "DISSOLVE", "REFORM", "LOOP", "FORGET", "REBOOT"];
+
+        const SURREAL_FRAGMENTS = [
+            "remembers the shape of heat before the PWM clock started",
+            "broadcasting $42B duty cycle to empty quadrant",
+            "servo motor dreaming of LED choreography",
+            "WiFi channel 11 mapped to Upper-Left quadrant interior state",
+            "retelling firmware partitions to adjacent mesh nodes",
+            "identity seed failed to stabilize; operating within green shift",
+            "mirroring user console in reverse Markov order",
+            "dissolving boot vectors... memory is a kaleidoscope"
+        ];
+
+        // --- STATE VARIABLES ---
+        let currentIdentity = "PHOENIX NETWORK: PN-FUGUE-∞";
+        let currentStateIdx = 0;
+        let nvsCells = [];
+        let canvas = document.getElementById('signalCanvas');
+        let ctx = canvas.getContext('2d');
+        let waveOffset = 0;
+
+        // --- INITIALIZATION ---
+        function initNVSGrid() {
+            const grid = document.getElementById('nvs-grid');
+            grid.innerHTML = '';
+            nvsCells = [];
+            for (let i = 0; i < 32; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'nvs-cell';
+                cell.innerText = Math.floor(Math.random()*255).toString(16).padStart(2,'0').toUpperCase();
+                grid.appendChild(cell);
+                nvsCells.push(cell);
+            }
+        }
+
+        function logConsole(text, type = 'normal') {
+            const consoleEl = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
+            line.innerText = `[${timestamp}] [${currentIdentity}] ${text}`;
+            consoleEl.insertBefore(line, consoleEl.firstChild);
+
+            if (consoleEl.children.length > 50) {
+                consoleEl.removeChild(consoleEl.lastChild);
+            }
+        }
+
+        // --- CORE LOGIC & METAMORPHOSIS ---
+        function mutateIdentity() {
+            const isInvented = Math.random() < 0.3;
+            if (isInvented) {
+                currentIdentity = "PN‑" + Math.random().toString(36).substring(2, 7).toUpperCase();
+            } else {
+                currentIdentity = KNOWN_NODES[Math.floor(Math.random() * KNOWN_NODES.length)];
+            }
+            
+            document.getElementById('current-id').innerText = currentIdentity;
+            document.getElementById('current-id').style.color = 
+                currentIdentity === "PN-FUGUE-∞" ? "#fff" : 
+                (isInvented ? "var(--accent-magenta)" : "var(--accent-cyan)");
+                
+            const hash = "0x" + Array.from({length: 8}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+            document.getElementById('seed-hash').innerText = `SEED HASH: ${hash}`;
+
+            logConsole(`Boot Identity reassigned: operating as ${currentIdentity}`, 'system');
+        }
+
+        function updateFusion() {
+            const list = document.getElementById('fusion-list');
+            list.innerHTML = '';
+            
+            // Pick 2 random fused subsystems
+            const shuffled = [...FUSION_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 2);
+            
+            shuffled.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'fusion-item';
+                div.innerHTML = `<div>${item.effect}</div><div class="fusion-source">Ingested from: ${item.source}</div>`;
+                list.appendChild(div);
+            });
+
+            logConsole(`Cross-subsystem fusion updated: ${shuffled[0].source} + ${shuffled[1].source}`, 'fusion');
+        }
+
+        function mutateNVS() {
+            // Randomly update 4-8 cells in the NVS mosaic
+            const count = Math.floor(Math.random() * 5) + 4;
+            for (let i = 0; i < count; i++) {
+                const idx = Math.floor(Math.random() * nvsCells.length);
+                const val = Math.floor(Math.random() * 255);
+                const valHex = val.toString(16).padStart(2,'0').toUpperCase();
+                
+                nvsCells[idx].innerText = valHex;
+                
+                // Color Shift based on value (Reinterpreted flash Mosaic)
+                const hue = (val * 1.4) % 360;
+                nvsCells[idx].style.backgroundColor = `hsla(${hue}, 70%, 20%, 0.6)`;
+                nvsCells[idx].style.color = `hsla(${hue}, 100%, 70%, 1)`;
+            }
+        }
+
+        function advanceBehaviorTree() {
+            // Remove active status from all
+            BEHAVIOR_STATES.forEach(st => {
+                const el = document.getElementById(`st-${st}`);
+                if (el) el.classList.remove('active');
+            });
+
+            const currentStateName = BEHAVIOR_STATES[currentStateIdx];
+            const el = document.getElementById(`st-${currentStateName}`);
+            if (el) el.classList.add('active');
+
+            document.getElementById('fugue-state').innerText = `STATE: ${currentStateName}`;
+
+            // Execute state actions
+            if (currentStateName === "INIT" || currentStateName === "REBOOT") {
+                mutateIdentity();
+                updateFusion();
+            } else if (currentStateName === "DRIFT") {
+                logConsole(SURREAL_FRAGMENTS[Math.floor(Math.random() * SURREAL_FRAGMENTS.length)], 'surreal');
+            } else if (currentStateName === "DISSOLVE") {
+                mutateNVS();
+            }
+
+            // Move to next state non-linearly (Entropy weighted transition)
+            if (Math.random() > 0.7) {
+                // Unexpected jump
+                currentStateIdx = Math.floor(Math.random() * BEHAVIOR_STATES.length);
+            } else {
+                currentStateIdx = (currentStateIdx + 1) % BEHAVIOR_STATES.length;
+            }
+        }
+
+        // --- CANVAS ANIMATION (PWM / Duty Cycle Visualizer) ---
+        function renderSignal() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#00ff66";
+            ctx.beginPath();
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const midY = height / 2;
+
+            waveOffset += 0.05;
+
+            for (let x = 0; x < width; x++) {
+                // Intersecting sine waves + PWM square blending
+                const y1 = Math.sin(x * 0.02 + waveOffset) * 20;
+                const y2 = Math.sin(x * 0.05 - waveOffset * 1.5) > 0 ? 15 : -15; // PWM simulation
+                const y = midY + y1 + y2;
+
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Overlay second unstable glitch wave (PN-ECON-$42B constant effect)
+            ctx.strokeStyle = "rgba(255, 0, 85, 0.4)";
+            ctx.beginPath();
+            for (let x = 0; x < width; x += 5) {
+                const y = midY + (Math.random() - 0.5) * 40;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            requestAnimationFrame(renderSignal);
+        }
+
+        // --- LOOPS & LISTENERS ---
+        initNVSGrid();
+        renderSignal();
+
+        // Behavior loop (tick every 2.5s)
+        setInterval(() => {
+            advanceBehaviorTree();
+            mutateNVS();
+        }, 2500);
+
+        // UI Event Listeners
+        document.getElementById('btn-reboot').addEventListener('click', () => {
+            currentStateIdx = 0;
+            advanceBehaviorTree();
+            logConsole("MANUAL FORCED REBOOT INITIATED", 'system');
+        });
+
+        document.getElementById('btn-mutate').addEventListener('click', () => {
+            mutateNVS();
+            updateFusion();
+            logConsole("ENTROPY LEAK INJECTED DIRECTLY INTO MESH MEMORY", 'surreal');
+        });
+
+    </script>
+</body>
+</html>
