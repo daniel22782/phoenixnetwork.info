@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DNS Cascade Simulator</title>
+</head>
+<body>
+  <h1>DNS Cascade Simulator</h1>
+  <p>
+    Click a scenario to see whether it triggers a <strong>DNS Cascade</strong>
+    (alignment between internal model and external input).
+  </p>
+
+  <h2>Scenarios</h2>
+
+  <button onclick="runScenario('alphaCAMFlow')">
+    AlphaCAM: Perfect Telepathic Workflow
+  </button>
+  <br><br>
+
+  <button onclick="runScenario('alphaCAMBreak')">
+    AlphaCAM: Unexpected Toolpath Error
+  </button>
+  <br><br>
+
+  <button onclick="runScenario('aiZenPost')">
+    Reading a Phoenix‑Grade AI Zen Post That Matches Your Beliefs
+  </button>
+  <br><br>
+
+  <button onclick="runScenario('aiHypeBuzzword')">
+    Watching a Buzzword‑Heavy AI Hype Video
+  </button>
+  <br><br>
+
+  <button onclick="runScenario('shopCoreDoctrine')">
+    ShopCore Doctrine That Respects Mastery and Tools
+  </button>
+  <br><br>
+
+  <button onclick="runScenario('corporateTraining')">
+    Corporate Training That Ignores Real Shop Experience
+  </button>
+  <br><br>
+
+  <h2>Result</h2>
+  <div id="result"></div>
+
+  <h2>Chemical Model</h2>
+  <p>
+    For simplicity, we model three signals:
+    <ul>
+      <li><strong>D</strong> = Dopamine (pattern match / correctness)</li>
+      <li><strong>S</strong> = Serotonin (confidence / stability)</li>
+      <li><strong>N</strong> = Noradrenaline (focus / importance)</li>
+    </ul>
+    A <strong>DNS Cascade</strong> occurs when all three are high.
+  </p>
+
+  <script>
+    function runScenario(id) {
+      const state = evaluateScenario(id);
+      const cascade = isDNSCascade(state);
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `
+        <h3>Scenario: ${state.label}</h3>
+        <p><strong>Description:</strong> ${state.description}</p>
+        <p><strong>D (Dopamine):</strong> ${state.D}</p>
+        <p><strong>S (Serotonin):</strong> ${state.S}</p>
+        <p><strong>N (Noradrenaline):</strong> ${state.N}</p>
+        <p><strong>DNS Cascade:</strong> ${cascade ? 'YES ✅' : 'NO ❌'}</p>
+        <p><strong>Explanation:</strong> ${state.explanation}</p>
+      `;
+    }
+
+    function isDNSCascade(state) {
+      // Simple threshold model: all three must be >= 7 (on a 0–10 scale)
+      return state.D >= 7 && state.S >= 7 && state.N >= 7;
+    }
+
+    function evaluateScenario(id) {
+      switch (id) {
+        case 'alphaCAMFlow':
+          return {
+            label: 'AlphaCAM: Perfect Telepathic Workflow',
+            description: 'Your SpaceMouse + CADMouse + AlphaCAM workflow runs exactly as intended, with zero friction.',
+            D: 9,
+            S: 9,
+            N: 8,
+            explanation: 'The external behavior perfectly matches your internal model of mastery. High reward, high stability, high focus → DNS Cascade.'
+          };
+
+        case 'alphaCAMBreak':
+          return {
+            label: 'AlphaCAM: Unexpected Toolpath Error',
+            description: 'A toolpath generates an unexpected collision or invalid move.',
+            D: 3,
+            S: 4,
+            N: 7,
+            explanation: 'Focus is high (you care), but pattern match and stability are low. No DNS Cascade — instead, frustration and troubleshooting.'
+          };
+
+        case 'aiZenPost':
+          return {
+            label: 'Phoenix‑Grade AI Zen Post',
+            description: 'You read a post that describes AI as a tool that amplifies mastery, exactly matching your beliefs.',
+            D: 8,
+            S: 8,
+            N: 7,
+            explanation: 'The language and framing align with your committed model of AI and mastery. All three signals high → DNS Cascade.'
+          };
+
+        case 'aiHypeBuzzword':
+          return {
+            label: 'Buzzword‑Heavy AI Hype Video',
+            description: 'A video claims AI will replace all humans and uses vague, non‑technical language.',
+            D: 2,
+            S: 3,
+            N: 5,
+            explanation: 'Your internal model rejects the framing. Low reward and low stability, moderate focus (annoyance) → no DNS Cascade.'
+          };
+
+        case 'shopCoreDoctrine':
+          return {
+            label: 'ShopCore Doctrine That Respects Mastery',
+            description: 'You read a ShopCore statement that says “AI is a tool that amplifies shop veterans, not replaces them.”',
+            D: 9,
+            S: 9,
+            N: 8,
+            explanation: 'This directly validates your commitment to mastery and tool‑centric thinking. Strong alignment → DNS Cascade.'
+          };
+
+        case 'corporateTraining':
+          return {
+            label: 'Corporate Training That Ignores Real Shop Experience',
+            description: 'A training module talks about “innovation” but clearly doesn’t understand actual shop workflows.',
+            D: 2,
+            S: 2,
+            N: 4,
+            explanation: 'Your internal model conflicts with the content. Low reward, low stability, mild focus → no DNS Cascade.'
+          };
+
+        default:
+          return {
+            label: 'Unknown Scenario',
+            description: 'No scenario selected.',
+            D: 0,
+            S: 0,
+            N: 0,
+            explanation: 'Select a scenario to simulate a possible DNS Cascade.'
+          };
+      }
+    }
+  </script>
+</body>
+</html>
